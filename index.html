@@ -14,15 +14,27 @@
 
 <script src="./config/version.js"></script>
 <script src="./config/supabase-config.js"></script>
+
 <script src="./services/supabase-service.js"></script>
+
 <script src="./core/state-manager.js"></script>
 <script src="./core/loader-manager.js"></script>
+
 <script src="./services/profile-service.js"></script>
 <script src="./services/feature-flag-service.js"></script>
+
 <script src="./core/permission-manager.js"></script>
 <script src="./core/auth-manager.js"></script>
+
+<script src="./core/module-manager.js"></script>
+
+<script src="./modules/dashboard/dashboard.js"></script>
+<script src="./modules/top-styles/top-styles.js"></script>
+<script src="./modules/pricing/pricing.js"></script>
+
 <script src="./core/router.js"></script>
 <script src="./core/navigation-manager.js"></script>
+
 <script src="./core/app.js"></script>
 
 </head>
@@ -35,7 +47,10 @@
 
 <script>
 
-document.getElementById("versionInfo").innerHTML =
+document.getElementById(
+    "versionInfo"
+).innerHTML =
+
 `
 ${window.MAP.version.name}
 v${window.MAP.version.version}
