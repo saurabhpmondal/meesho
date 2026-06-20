@@ -4,10 +4,64 @@ window.MAP.AdsRepository = {
 
     getRows(){
 
-        return (
+        const rows =
             window.MAP.DataStore
-            .ads || []
-        );
+            .ads || [];
+
+        const fromDate =
+            window.MAP.FilterState
+            .getFromDate();
+
+        if(!fromDate){
+            return rows;
+        }
+
+        const date =
+            new Date(
+                fromDate
+            );
+
+        const month =
+            date.getMonth() + 1;
+
+        const year =
+            date.getFullYear();
+
+        return rows.filter(row => {
+
+            return (
+
+                Number(
+                    row.month
+                ) === month
+
+                &&
+
+                Number(
+                    row.year
+                ) === year
+
+            );
+
+        });
+
+    },
+
+    cleanNumber(value){
+
+        if(
+            value === null ||
+            value === undefined
+        ){
+            return 0;
+        }
+
+        return Number(
+            String(value)
+            .replace(/,/g,"")
+            .replace(/₹/g,"")
+            .trim()
+        ) || 0;
 
     },
 
@@ -21,8 +75,8 @@ window.MAP.AdsRepository = {
 
                     sum +
 
-                    Number(
-                        row.ads_spend || 0
+                    this.cleanNumber(
+                        row.ads_spend
                     ),
 
                 0
@@ -41,8 +95,8 @@ window.MAP.AdsRepository = {
 
                     sum +
 
-                    Number(
-                        row.revenue || 0
+                    this.cleanNumber(
+                        row.revenue
                     ),
 
                 0
@@ -60,9 +114,13 @@ window.MAP.AdsRepository = {
             return 0;
         }
 
+        const gmv =
+            window.MAP
+            .SalesRepository
+            .getGMV();
+
         return (
-            this.getRevenue() /
-            spend
+            gmv / spend
         );
 
     }
