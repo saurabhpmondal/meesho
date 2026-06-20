@@ -24,7 +24,8 @@ window.MAP.Layout = {
             !showFilters
         ){
 
-            toolbar.style.display = "none";
+            toolbar.style.display =
+                "none";
 
             toolbar.innerHTML = "";
 
@@ -32,25 +33,40 @@ window.MAP.Layout = {
 
         }
 
-        toolbar.style.display = "flex";
+        toolbar.style.display =
+            "flex";
 
         toolbar.innerHTML = `
-            <div class="toolbar-placeholder">
 
-                ${showSearch ? `
-                    <div>
-                        Search Area
-                    </div>
-                ` : ""}
+            <div class="toolbar-wrapper">
 
-                ${showFilters ? `
-                    <div>
-                        Filters Area
-                    </div>
-                ` : ""}
+                ${
+                    showSearch
+                    ? window.MAP.Search.render()
+                    : ""
+                }
+
+                ${
+                    showFilters
+                    ? window.MAP.Filters.render()
+                    : ""
+                }
 
             </div>
+
         `;
+
+        if(showSearch){
+
+            window.MAP.Search.init();
+
+        }
+
+        if(showFilters){
+
+            window.MAP.Filters.init();
+
+        }
 
     }
 
