@@ -197,6 +197,12 @@ window.MAP.App = {
 
                 </nav>
 
+                <div
+                    id="contextToolbar"
+                    class="context-toolbar"
+                >
+                </div>
+
                 <main
                     id="mainContent"
                     class="app-content"
