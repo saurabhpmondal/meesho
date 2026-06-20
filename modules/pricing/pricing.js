@@ -10,7 +10,7 @@ window.MAP.ModuleManager.register({
 
     permission: "pricing_view",
 
-    showSearch: false,
+    showSearch: true,
 
     showFilters: false,
 
@@ -20,26 +20,19 @@ window.MAP.ModuleManager.register({
 
         <div class="dashboard-page">
 
-            <div
-                class="dashboard-report-card"
-            >
+            <div class="dashboard-report-card">
 
                 <div
                     style="
                         display:flex;
-                        justify-content:space-between;
+                        gap:12px;
+                        flex-wrap:wrap;
                         align-items:center;
-                        margin-bottom:16px;
+                        margin-bottom:20px;
                     "
                 >
 
-                    <h2>
-                        Pricing Engine
-                    </h2>
-
-                    <select
-                        id="pricingScenario"
-                    >
+                    <select id="pricingScenario">
 
                         <option value="BAU">
                             BAU
@@ -55,7 +48,38 @@ window.MAP.ModuleManager.register({
 
                     </select>
 
+                    <select id="pricingStatus">
+
+                        <option value="All">
+                            All Status
+                        </option>
+
+                    </select>
+
+                    <button
+                        id="generatePricingBtn"
+                        class="primary-btn"
+                    >
+                        Generate Pricing
+                    </button>
+
+                    <button
+                        id="refreshPricingBtn"
+                    >
+                        Refresh
+                    </button>
+
+                    <button
+                        id="exportPricingBtn"
+                    >
+                        Export CSV
+                    </button>
+
                 </div>
+
+                <div
+                    id="pricingKpis"
+                ></div>
 
                 <div
                     id="pricingTableContainer"
@@ -72,21 +96,133 @@ window.MAP.ModuleManager.register({
                 "pricingScenario"
             );
 
+        const statusSelect =
+            document.getElementById(
+                "pricingStatus"
+            );
+
+        const statuses =
+
+            window.MAP
+            .PricingRepository
+            .getStatuses();
+
+        statusSelect.innerHTML = `
+
+            <option value="All">
+                All Status
+            </option>
+
+            ${statuses.map(x => `
+                <option value="${x}">
+                    ${x}
+                </option>
+            `).join("")}
+
+        `;
+
+        let currentRows = [];
+
+        const getSearch = () => {
+
+            const searchBox =
+                document.querySelector(
+                    ".global-search-input"
+                );
+
+            return searchBox
+                ?
+                searchBox.value
+                :
+                "";
+
+        };
+
         const renderTable = () => {
 
-            const rows =
+            currentRows =
 
                 window.MAP
                 .PricingRepository
                 .getRows(
 
-                    scenarioSelect.value
+                    scenarioSelect.value,
 
-                )
-                .slice(
-                    0,
-                    100
+                    statusSelect.value,
+
+                    getSearch()
+
                 );
+
+            const kpis =
+
+                window.MAP
+                .PricingRepository
+                .getKpis(
+                    currentRows
+                );
+
+            document.getElementById(
+                "pricingKpis"
+            ).innerHTML = `
+
+                <div class="kpi-grid">
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Styles
+                        </div>
+
+                        <div class="kpi-value">
+                            ${kpis.totalStyles.toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Avg TP
+                        </div>
+
+                        <div class="kpi-value">
+                            ₹${Math.round(
+                                kpis.avgTP
+                            ).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Avg SP
+                        </div>
+
+                        <div class="kpi-value">
+                            ₹${Math.round(
+                                kpis.avgSP
+                            ).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Avg Margin %
+                        </div>
+
+                        <div class="kpi-value">
+                            ${kpis.avgMargin.toFixed(2)}%
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
 
             document.getElementById(
                 "pricingTableContainer"
@@ -95,6 +231,7 @@ window.MAP.ModuleManager.register({
             <div
                 style="
                     overflow:auto;
+                    max-height:75vh;
                 "
             >
 
@@ -102,57 +239,38 @@ window.MAP.ModuleManager.register({
                 class="report-table"
             >
 
-                <thead>
+                <thead
+                    style="
+                        position:sticky;
+                        top:0;
+                        background:white;
+                        z-index:5;
+                    "
+                >
 
                 <tr>
 
-                    <th>ERP Launch</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Catalog</th>
                     <th>Style ID</th>
-                    <th>Seller SKU</th>
                     <th>ERP SKU</th>
-                    <th>Product ID</th>
                     <th>Status</th>
 
-                    <th>CSP</th>
+                    <th>TP</th>
                     <th>SP</th>
+                    <th>CSP</th>
+
                     <th>Shipping</th>
-
-                    <th>Base SP</th>
-                    <th>Base Shipping</th>
-                    <th>Tax Shipping</th>
-
-                    <th>Base CSP</th>
-                    <th>Tax CSP</th>
-
-                    <th>TCS</th>
-                    <th>TDS</th>
-
-                    <th>Shipping+Tax</th>
-
-                    <th>Bank Settlement</th>
-
-                    <th>Calc Payout</th>
-
-                    <th>Marketing</th>
-                    <th>Packing</th>
-
-                    <th>Return Charges</th>
-                    <th>Return %</th>
-
-                    <th>Return CODB</th>
-
-                    <th>Total CODB</th>
 
                     <th>PA-CODB</th>
 
-                    <th>TP</th>
-
                     <th>Diff</th>
 
-                    <th>TP Margin %</th>
+                    <th>Margin %</th>
+
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Catalog</th>
+                    <th>Seller SKU</th>
+                    <th>Product ID</th>
 
                 </tr>
 
@@ -160,63 +278,85 @@ window.MAP.ModuleManager.register({
 
                 <tbody>
 
-                ${rows.map(r => `
+                ${currentRows.map(r => {
+
+                    let cls =
+                        "";
+
+                    if(
+                        r.tp_margin_percent
+                        <= -35
+                    ){
+                        cls =
+                            "positive-value";
+                    }
+                    else if(
+                        r.tp_margin_percent
+                        <= -15
+                    ){
+                        cls =
+                            "";
+                    }
+                    else{
+                        cls =
+                            "negative-value";
+                    }
+
+                    return `
 
                     <tr>
 
-                        <td>${r.erp_launch_date}</td>
-                        <td>${r.brand}</td>
-                        <td>${r.category}</td>
-                        <td>${r.catalog_id}</td>
                         <td>${r.style_id}</td>
-                        <td>${r.sellersku}</td>
+
                         <td>${r.erpsku}</td>
-                        <td>${r.product_id}</td>
+
                         <td>${r.erp_status}</td>
 
-                        <td>${r.csp.toFixed(2)}</td>
-                        <td>${r.sp.toFixed(2)}</td>
-                        <td>${r.shipping.toFixed(2)}</td>
+                        <td>
+                            ${r.tp.toFixed(2)}
+                        </td>
 
-                        <td>${r.base_sp.toFixed(2)}</td>
-                        <td>${r.base_shipping.toFixed(2)}</td>
-                        <td>${r.tax_on_shipping.toFixed(2)}</td>
+                        <td>
+                            ${r.sp.toFixed(2)}
+                        </td>
 
-                        <td>${r.base_csp.toFixed(2)}</td>
-                        <td>${r.tax_on_csp.toFixed(2)}</td>
+                        <td>
+                            ${r.csp.toFixed(2)}
+                        </td>
 
-                        <td>${r.tcs.toFixed(2)}</td>
-                        <td>${r.tds.toFixed(2)}</td>
+                        <td>
+                            ${r.shipping.toFixed(2)}
+                        </td>
 
-                        <td>${r.shipping_with_tax.toFixed(2)}</td>
+                        <td>
+                            ${r.payout_after_codb.toFixed(2)}
+                        </td>
 
-                        <td>${r.bank_settlement.toFixed(2)}</td>
+                        <td>
+                            ${r.diff.toFixed(2)}
+                        </td>
 
-                        <td>${r.calc_payout.toFixed(2)}</td>
+                        <td
+                            class="${cls}"
+                        >
+                            ${r.tp_margin_percent.toFixed(2)}%
+                        </td>
 
-                        <td>${r.marketing.toFixed(2)}</td>
+                        <td>${r.brand}</td>
 
-                        <td>${r.packing.toFixed(2)}</td>
+                        <td>${r.category}</td>
 
-                        <td>${r.return_charges.toFixed(2)}</td>
+                        <td>${r.catalog_id}</td>
 
-                        <td>${r.return_percent}%</td>
+                        <td>${r.sellersku}</td>
 
-                        <td>${r.return_codb.toFixed(2)}</td>
-
-                        <td>${r.total_codb.toFixed(2)}</td>
-
-                        <td>${r.payout_after_codb.toFixed(2)}</td>
-
-                        <td>${r.tp.toFixed(2)}</td>
-
-                        <td>${r.diff.toFixed(2)}</td>
-
-                        <td>${r.tp_margin_percent.toFixed(2)}%</td>
+                        <td>${r.product_id}</td>
 
                     </tr>
 
-                `).join("")}
+                    `;
+
+                }).join("")}
 
                 </tbody>
 
@@ -228,10 +368,71 @@ window.MAP.ModuleManager.register({
 
         };
 
+        document.getElementById(
+            "generatePricingBtn"
+        ).addEventListener(
+
+            "click",
+
+            renderTable
+
+        );
+
+        document.getElementById(
+            "refreshPricingBtn"
+        ).addEventListener(
+
+            "click",
+
+            renderTable
+
+        );
+
+        document.getElementById(
+            "exportPricingBtn"
+        ).addEventListener(
+
+            "click",
+
+            () => {
+
+                window.MAP
+                .PricingRepository
+                .exportCSV(
+                    currentRows
+                );
+
+            }
+
+        );
+
+        statusSelect.addEventListener(
+            "change",
+            renderTable
+        );
+
         scenarioSelect.addEventListener(
             "change",
             renderTable
         );
+
+        setTimeout(() => {
+
+            const searchBox =
+                document.querySelector(
+                    ".global-search-input"
+                );
+
+            if(searchBox){
+
+                searchBox.addEventListener(
+                    "keyup",
+                    renderTable
+                );
+
+            }
+
+        },500);
 
         renderTable();
 
