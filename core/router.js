@@ -42,7 +42,9 @@ window.MAP.Router = {
         document
             .querySelectorAll(".nav-item")
             .forEach(x =>
-                x.classList.remove("active")
+                x.classList.remove(
+                    "active"
+                )
             );
 
         const active =
@@ -52,7 +54,9 @@ window.MAP.Router = {
 
         if(active){
 
-            active.classList.add("active");
+            active.classList.add(
+                "active"
+            );
 
         }
 
