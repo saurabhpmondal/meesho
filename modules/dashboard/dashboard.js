@@ -16,66 +16,155 @@ window.MAP.ModuleManager.register({
 
     async render(container){
 
-        container.innerHTML = `
-            <div style="padding:20px;">
+        const salesRepo =
+            window.MAP.SalesRepository;
 
-                <h2>
-                    Dashboard
-                </h2>
+        const adsRepo =
+            window.MAP.AdsRepository;
 
-                <div id="dashboardStatus">
-                    Loading data...
-                </div>
+        const gmv =
+            salesRepo.getGMV();
 
-            </div>
-        `;
+        const units =
+            salesRepo.getUnits();
 
-        await window.MAP
-            .DataBootstrapService
-            .load();
+        const asp =
+            salesRepo.getASP();
+
+        const adSpend =
+            adsRepo.getAdSpend();
+
+        const roi =
+            adsRepo.getROI();
 
         const meta =
             window.MAP.DataStore
             .metadata;
 
-        document.getElementById(
-            "dashboardStatus"
-        ).innerHTML = `
+        container.innerHTML = `
 
-            <div>
+            <div class="dashboard-page">
 
-                <p>
-                    Sales Rows :
-                    ${meta.salesRows}
-                </p>
+                <div class="dashboard-header">
 
-                <p>
-                    Ads Rows :
-                    ${meta.adsRows}
-                </p>
+                    <h2>
+                        Dashboard
+                    </h2>
 
-                <p>
-                    Master Rows :
-                    ${meta.masterRows}
-                </p>
+                    <div class="dashboard-meta">
 
-                <p>
-                    Status :
-                    ${meta.refreshStatus}
-                </p>
+                        <span>
+                            Last Refresh :
+                            ${
+                                meta.lastRefresh
+                                ?
+                                new Date(
+                                    meta.lastRefresh
+                                ).toLocaleString()
+                                :
+                                "-"
+                            }
+                        </span>
 
-                <p>
-                    Last Refresh :
-                    ${
-                        meta.lastRefresh
-                        ?
-                        new Date(
-                            meta.lastRefresh
-                        ).toLocaleString()
-                        :
-                        "-"
-                    }
-                </p>
+                    </div>
+
+                </div>
+
+                <div class="kpi-grid">
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            GMV
+                        </div>
+
+                        <div class="kpi-value">
+                            ₹${Math.round(gmv).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Units
+                        </div>
+
+                        <div class="kpi-value">
+                            ${units.toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            ASP
+                        </div>
+
+                        <div class="kpi-value">
+                            ₹${Math.round(asp).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            Ad Spend
+                        </div>
+
+                        <div class="kpi-value">
+                            ₹${Math.round(adSpend).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">
+                            ROI
+                        </div>
+
+                        <div class="kpi-value">
+                            ${roi.toFixed(2)}x
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="dashboard-debug">
+
+                    <h3>
+                        Data Status
+                    </h3>
+
+                    <table class="report-table">
+
+                        <tr>
+                            <td>Sales Rows</td>
+                            <td>${meta.salesRows}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Ads Rows</td>
+                            <td>${meta.adsRows}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Master Rows</td>
+                            <td>${meta.masterRows}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Status</td>
+                            <td>${meta.refreshStatus}</td>
+                        </tr>
+
+                    </table>
+
+                </div>
 
             </div>
 
