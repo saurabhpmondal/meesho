@@ -88,7 +88,9 @@ window.MAP.App = {
             console.error(error);
 
             alert(error.message);
+
         }
+
     },
 
     renderLogin(){
@@ -124,109 +126,119 @@ window.MAP.App = {
         `;
 
         document
-        .getElementById("loginBtn")
-        .addEventListener("click", async () => {
+            .getElementById("loginBtn")
+            .addEventListener("click", async () => {
 
-            const email =
-                document.getElementById("email")
-                .value.trim();
+                const email =
+                    document.getElementById("email")
+                    .value.trim();
 
-            const password =
-                document.getElementById("password")
-                .value;
+                const password =
+                    document.getElementById("password")
+                    .value;
 
-            const success =
-                await window.MAP.Auth.login(
-                    email,
-                    password
-                );
+                if(!email || !password){
 
-            if(success){
+                    alert(
+                        "Email and Password required"
+                    );
 
-                location.reload();
+                    return;
+                }
 
-            }
+                const success =
+                    await window.MAP.Auth.login(
+                        email,
+                        password
+                    );
 
-        });
+                if(success){
+
+                    location.reload();
+
+                }
+
+            });
 
     },
 
-renderHome(){
+    renderHome(){
 
-    const user =
-        window.MAP.state.user;
+        const user =
+            window.MAP.state.user;
 
-    const role =
-        window.MAP.state.role;
+        document.getElementById("app").innerHTML = `
 
-    document.getElementById("app").innerHTML = `
+            <div class="app-shell">
 
-        <div class="app-shell">
+                <header class="app-header">
 
-            <header class="app-header">
+                    <div class="app-title">
+                        Meesho Analytics
+                    </div>
 
-                <div class="app-title">
-                    Meesho Analytics
-                </div>
+                    <div class="user-area">
 
-                <div class="user-area">
+                        <span>
+                            ${user.email}
+                        </span>
 
-                    ${user.email}
+                        <button id="logoutBtn">
+                            Logout
+                        </button>
 
-                    <button id="logoutBtn">
-                        Logout
-                    </button>
+                    </div>
 
-                </div>
+                </header>
 
-            </header>
+                <nav class="app-nav">
 
-            <nav class="app-nav">
+                    ${window.MAP.Navigation.render()}
 
-                ${window.MAP.Navigation.render()}
+                </nav>
 
-            </nav>
+                <main
+                    id="mainContent"
+                    class="app-content"
+                >
+                </main>
 
-            <main
-                id="mainContent"
-                class="app-content"
-            >
-            </main>
+            </div>
 
-        </div>
+        `;
 
-    `;
+        document
+            .getElementById("logoutBtn")
+            .addEventListener("click", () => {
 
-    document
-        .getElementById("logoutBtn")
-        .addEventListener("click",()=>{
+                window.MAP.Auth.logout();
 
-            window.MAP.Auth.logout();
+            });
 
-        });
+        document
+            .querySelectorAll(".nav-item")
+            .forEach(item => {
 
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item=>{
+                item.addEventListener(
+                    "click",
+                    () => {
 
-            item.addEventListener(
-                "click",
-                ()=>{
+                        const route =
+                            item.dataset.route;
 
-                    const route =
-                        item.dataset.route;
+                        window.MAP.Router.navigate(
+                            route
+                        );
 
-                    window.MAP.Router.navigate(
-                        route
-                    );
+                    }
+                );
 
-                }
-            );
+            });
 
-        });
+        window.MAP.Router.navigate(
+            "dashboard"
+        );
 
-    window.MAP.Router.navigate(
-        "dashboard"
-    );
+    }
 
-}
+};
