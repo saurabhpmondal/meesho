@@ -10,6 +10,10 @@ window.MAP.ModuleManager.register({
 
     permission: "pricing_view",
 
+    showSearch: false,
+
+    showFilters: false,
+
     render(container){
 
         container.innerHTML = `
