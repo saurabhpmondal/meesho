@@ -7,77 +7,39 @@ window.MAP.Navigation = {
         const flags =
             window.MAP.state.featureFlags || [];
 
-        const enabledModules =
+        const enabledFlags =
             flags
             .filter(x => x.enabled)
             .map(x => x.module_name);
 
-        const modules = [];
-
-        if(enabledModules.includes("dashboard")){
-            modules.push({
-                id:"dashboard",
-                title:"Dashboard"
-            });
-        }
-
-        if(enabledModules.includes("top_styles")){
-            modules.push({
-                id:"top_styles",
-                title:"Top Styles"
-            });
-        }
-
-        if(enabledModules.includes("pricing")){
-            modules.push({
-                id:"pricing",
-                title:"Pricing"
-            });
-        }
-
-        if(enabledModules.includes("flexi_growth")){
-            modules.push({
-                id:"flexi_growth",
-                title:"Flexi Growth"
-            });
-        }
-
-        if(enabledModules.includes("sales_events")){
-            modules.push({
-                id:"sales_events",
-                title:"Sales Events"
-            });
-        }
-
-        if(enabledModules.includes("flash_sale")){
-            modules.push({
-                id:"flash_sale",
-                title:"Flash Sale"
-            });
-        }
-
-        return modules;
+        return window.MAP
+            .ModuleManager
+            .getAll()
+            .filter(module =>
+                enabledFlags.includes(
+                    module.featureFlag
+                )
+            );
 
     },
 
     render(){
 
-        const modules =
-            this.getModules();
+        return this
+            .getModules()
+            .map(module => `
 
-        const navHtml =
-            modules
-            .map(m => `
                 <div
                     class="nav-item"
-                    data-route="${m.id}"
+                    data-route="${module.id}"
                 >
-                    ${m.title}
+
+                    ${module.title}
+
                 </div>
+
             `)
             .join("");
-
-        return navHtml;
 
     }
 
