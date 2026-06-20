@@ -6,7 +6,7 @@ window.MAP.ModuleManager.register({
 
     title: "Flexi Growth",
 
-    featureFlag: "flexi_growth",
+    featureFlag: "pricing",
 
     permission: "pricing_view",
 
