@@ -37,6 +37,9 @@ window.MAP.ModuleManager.register({
         const roi =
             adsRepo.getROI();
 
+        const adRow =
+            adsRepo.getCurrentMonthRow();
+
         const fromDate =
             window.MAP.FilterState
             .getFromDate();
@@ -69,7 +72,6 @@ window.MAP.ModuleManager.register({
 
                             ${fromDate}
                             →
-
                             ${toDate}
 
                         </div>
@@ -158,7 +160,7 @@ window.MAP.ModuleManager.register({
 
                         <div class="kpi-value">
                             ₹${Math.round(
-                                adSpend
+                                adSpend || 0
                             ).toLocaleString()}
                         </div>
 
@@ -171,7 +173,7 @@ window.MAP.ModuleManager.register({
                         </div>
 
                         <div class="kpi-value">
-                            ${roi.toFixed(2)}x
+                            ${(roi || 0).toFixed(2)}x
                         </div>
 
                     </div>
@@ -227,9 +229,19 @@ window.MAP.ModuleManager.register({
                             </td>
 
                             <td>
-                                ${adsRepo
-                                    .getRows()
-                                    .length}
+                                ${adRow ? 1 : 0}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Revenue
+                            </td>
+
+                            <td>
+                                ₹${Math.round(
+                                    adsRepo.getRevenue()
+                                ).toLocaleString()}
                             </td>
                         </tr>
 
