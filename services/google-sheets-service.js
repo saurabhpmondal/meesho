@@ -7,12 +7,17 @@ window.MAP.GoogleSheetService = {
     SPREADSHEET_ID:
         "14N_OSTi1z1OiSF89I6RBPNXZnno9GPz1-snvuI9Lev0",
 
-    async fetchSheet(gid, cacheKey){
+    async fetchSheet(
+        gid,
+        cacheKey
+    ){
 
         try{
 
             const cached =
-                this.getCache(cacheKey);
+                cacheKey
+                ? this.getCache(cacheKey)
+                : null;
 
             if(cached){
 
@@ -26,6 +31,7 @@ window.MAP.GoogleSheetService = {
                 );
 
                 return cached;
+
             }
 
             return await this.fetchFresh(
@@ -74,7 +80,7 @@ window.MAP.GoogleSheetService = {
 
         const headers =
             cols.map(
-                c => c.label
+                col => col.label
             );
 
         const data =
@@ -83,7 +89,10 @@ window.MAP.GoogleSheetService = {
                 const obj = {};
 
                 headers.forEach(
-                    (header,index)=>{
+                    (
+                        header,
+                        index
+                    ) => {
 
                         obj[header] =
                             row.c?.[index]?.v ?? "";
@@ -108,6 +117,10 @@ window.MAP.GoogleSheetService = {
         gid,
         cacheKey
     ){
+
+        if(!cacheKey){
+            return;
+        }
 
         setTimeout(
             async ()=>{
@@ -139,6 +152,10 @@ window.MAP.GoogleSheetService = {
     },
 
     getCache(cacheKey){
+
+        if(!cacheKey){
+            return null;
+        }
 
         const cache =
             localStorage.getItem(
@@ -176,25 +193,36 @@ window.MAP.GoogleSheetService = {
         data
     ){
 
+        if(
+            !cacheKey ||
+            cacheKey === "master_cache"
+        ){
+            return;
+        }
+
         try{
 
-    localStorage.setItem(
-        cacheKey,
-        JSON.stringify({
-            timestamp: Date.now(),
-            data
-        })
-    );
+            localStorage.setItem(
+                cacheKey,
+                JSON.stringify({
 
-}
-catch(error){
+                    timestamp:
+                        Date.now(),
 
-    console.warn(
-        "Cache skipped",
-        cacheKey
-    );
+                    data
 
-}
+                })
+            );
+
+        }
+        catch(error){
+
+            console.warn(
+                "Cache skipped",
+                cacheKey
+            );
+
+        }
 
     },
 
