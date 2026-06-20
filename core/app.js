@@ -27,11 +27,60 @@ window.MAP.App = {
                 "User Authenticated"
             );
 
-            setTimeout(()=>{
+            const profile =
+                await window.MAP.ProfileService
+                .getProfile(
+                    session.user.id
+                );
+
+            window.MAP.state.profile =
+                profile;
+
+            window.MAP.Loader.add(
+                "User Profile Loaded"
+            );
+
+            const role =
+                profile.roles;
+
+            window.MAP.state.role =
+                role;
+
+            window.MAP.Loader.add(
+                `Role Loaded (${role.role_name})`
+            );
+
+            const permissions =
+                await window.MAP.PermissionManager
+                .getPermissions(role.id);
+
+            window.MAP.state.permissions =
+                permissions;
+
+            window.MAP.Loader.add(
+                `${permissions.length} Permissions Loaded`
+            );
+
+            const flags =
+                await window.MAP.FeatureFlagService
+                .getFlags();
+
+            window.MAP.state.featureFlags =
+                flags;
+
+            window.MAP.Loader.add(
+                `${flags.length} Feature Flags Loaded`
+            );
+
+            window.MAP.Loader.add(
+                "Platform Ready"
+            );
+
+            setTimeout(() => {
 
                 this.renderHome();
 
-            },500);
+            }, 500);
 
         }
         catch(error){
@@ -76,27 +125,15 @@ window.MAP.App = {
 
         document
         .getElementById("loginBtn")
-        .addEventListener("click",async()=>{
+        .addEventListener("click", async () => {
 
             const email =
-                document
-                .getElementById("email")
-                .value
-                .trim();
+                document.getElementById("email")
+                .value.trim();
 
             const password =
-                document
-                .getElementById("password")
+                document.getElementById("password")
                 .value;
-
-            if(!email || !password){
-
-                alert(
-                    "Email and Password required"
-                );
-
-                return;
-            }
 
             const success =
                 await window.MAP.Auth.login(
@@ -107,6 +144,7 @@ window.MAP.App = {
             if(success){
 
                 location.reload();
+
             }
 
         });
@@ -118,13 +156,11 @@ window.MAP.App = {
         const user =
             window.MAP.state.user;
 
+        const role =
+            window.MAP.state.role;
+
         document.getElementById("app").innerHTML = `
-            <div
-                style="
-                    padding:40px;
-                    text-align:center;
-                "
-            >
+            <div style="padding:40px;">
 
                 <h1>
                     Welcome
@@ -132,6 +168,27 @@ window.MAP.App = {
 
                 <p>
                     ${user.email}
+                </p>
+
+                <br>
+
+                <p>
+                    Role:
+                    ${role.role_name}
+                </p>
+
+                <br>
+
+                <p>
+                    Permissions:
+                    ${window.MAP.state.permissions.length}
+                </p>
+
+                <br>
+
+                <p>
+                    Feature Flags:
+                    ${window.MAP.state.featureFlags.length}
                 </p>
 
                 <br>
@@ -145,7 +202,7 @@ window.MAP.App = {
 
         document
         .getElementById("logoutBtn")
-        .addEventListener("click",()=>{
+        .addEventListener("click", () => {
 
             window.MAP.Auth.logout();
 
