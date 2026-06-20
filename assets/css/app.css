@@ -144,3 +144,14 @@ body{
 .app-content{
     padding:20px;
 }
+.context-toolbar{
+    display:none;
+    background:white;
+    border-bottom:1px solid #ddd;
+    padding:12px 20px;
+}
+
+.toolbar-placeholder{
+    display:flex;
+    gap:20px;
+}
