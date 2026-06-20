@@ -10,11 +10,13 @@ window.MAP.Filters = {
                 <input
                     type="date"
                     id="dateFrom"
+                    value="${window.MAP.FilterState.getFromDate()}"
                 >
 
                 <input
                     type="date"
                     id="dateTo"
+                    value="${window.MAP.FilterState.getToDate()}"
                 >
 
             </div>
@@ -38,31 +40,38 @@ window.MAP.Filters = {
             return;
         }
 
-        const update = ()=>{
-
-            window.MAP.state.filters = {
-
-                dateFrom: from.value,
-
-                dateTo: to.value
-
-            };
-
-            console.log(
-                "Filters",
-                window.MAP.state.filters
-            );
-
-        };
-
         from.addEventListener(
             "change",
-            update
+            ()=>{
+
+                window.MAP.FilterState
+                    .setFromDate(
+                        from.value
+                    );
+
+                console.log(
+                    "From Date:",
+                    from.value
+                );
+
+            }
         );
 
         to.addEventListener(
             "change",
-            update
+            ()=>{
+
+                window.MAP.FilterState
+                    .setToDate(
+                        to.value
+                    );
+
+                console.log(
+                    "To Date:",
+                    to.value
+                );
+
+            }
         );
 
     }
