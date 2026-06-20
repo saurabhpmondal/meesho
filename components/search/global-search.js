@@ -14,6 +14,7 @@ window.MAP.Search = {
                     id="globalSearch"
                     class="global-search-input"
                     placeholder="Search ERP SKU, Product ID, Style ID, Seller SKU, Catalog ID"
+                    value="${window.MAP.FilterState.getSearch()}"
                 >
 
             </div>
@@ -46,15 +47,15 @@ window.MAP.Search = {
                         const value =
                             e.target.value.trim();
 
-                        window.MAP.state.searchText =
-                            value;
+                        window.MAP.FilterState
+                            .setSearch(value);
 
                         console.log(
-                            "Search:",
+                            "Global Search:",
                             value
                         );
 
-                    },400);
+                    },300);
 
             }
         );
