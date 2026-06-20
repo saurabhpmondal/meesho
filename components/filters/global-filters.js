@@ -50,9 +50,25 @@ window.MAP.Filters = {
                     );
 
                 console.log(
-                    "From Date:",
+                    "From Date Updated",
                     from.value
                 );
+
+                const current =
+                    window.MAP.Router
+                    .current;
+
+                if(
+                    current === "dashboard" ||
+                    current === "top_styles"
+                ){
+
+                    window.MAP.Router
+                        .navigate(
+                            current
+                        );
+
+                }
 
             }
         );
@@ -67,9 +83,25 @@ window.MAP.Filters = {
                     );
 
                 console.log(
-                    "To Date:",
+                    "To Date Updated",
                     to.value
                 );
+
+                const current =
+                    window.MAP.Router
+                    .current;
+
+                if(
+                    current === "dashboard" ||
+                    current === "top_styles"
+                ){
+
+                    window.MAP.Router
+                        .navigate(
+                            current
+                        );
+
+                }
 
             }
         );
