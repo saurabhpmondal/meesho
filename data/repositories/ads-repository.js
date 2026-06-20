@@ -5,8 +5,7 @@ window.MAP.AdsRepository = {
     getRows(){
 
         const rows =
-            window.MAP.DataStore
-            .ads || [];
+            window.MAP.DataStore.ads || [];
 
         const fromDate =
             window.MAP.FilterState
@@ -16,52 +15,26 @@ window.MAP.AdsRepository = {
             return rows;
         }
 
-        const date =
-            new Date(
-                fromDate
-            );
+        const selected =
+            new Date(fromDate);
 
         const month =
-            date.getMonth() + 1;
+            selected.getMonth() + 1;
 
         const year =
-            date.getFullYear();
+            selected.getFullYear();
 
         return rows.filter(row => {
 
             return (
 
-                Number(
-                    row.month
-                ) === month
+                Number(row.month) === month &&
 
-                &&
-
-                Number(
-                    row.year
-                ) === year
+                Number(row.year) === year
 
             );
 
         });
-
-    },
-
-    cleanNumber(value){
-
-        if(
-            value === null ||
-            value === undefined
-        ){
-            return 0;
-        }
-
-        return Number(
-            String(value)
-            .replace(/,/g,"")
-            .replace(/₹/g,"")
-            .trim()
-        ) || 0;
 
     },
 
@@ -75,8 +48,8 @@ window.MAP.AdsRepository = {
 
                     sum +
 
-                    this.cleanNumber(
-                        row.ads_spend
+                    Number(
+                        row.ads_spend || 0
                     ),
 
                 0
@@ -95,8 +68,8 @@ window.MAP.AdsRepository = {
 
                     sum +
 
-                    this.cleanNumber(
-                        row.revenue
+                    Number(
+                        row.revenue || 0
                     ),
 
                 0
@@ -107,20 +80,15 @@ window.MAP.AdsRepository = {
 
     getROI(){
 
-        const spend =
-            this.getAdSpend();
+        const rows =
+            this.getRows();
 
-        if(!spend){
+        if(!rows.length){
             return 0;
         }
 
-        const gmv =
-            window.MAP
-            .SalesRepository
-            .getGMV();
-
-        return (
-            gmv / spend
+        return Number(
+            rows[0].roi || 0
         );
 
     }
