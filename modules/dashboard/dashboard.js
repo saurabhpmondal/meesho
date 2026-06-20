@@ -30,16 +30,9 @@ window.MAP.ModuleManager.register({
             </div>
         `;
 
-        await Promise.all([
-            window.MAP.SalesLoader.load(),
-            window.MAP.AdsLoader.load(),
-            window.MAP.MasterLoader.load()
-        ]);
-
-        window.MAP.DataStore
-            .metadata
-            .refreshStatus =
-            "Loaded";
+        await window.MAP
+            .DataBootstrapService
+            .load();
 
         const meta =
             window.MAP.DataStore
