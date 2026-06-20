@@ -2,26 +2,35 @@ window.MAP = window.MAP || {};
 
 window.MAP.PricingRepository = {
 
+    cachedRows: [],
+
+    lastScenario: "BAU",
+
+    generating: false,
+
+    clearCache(){
+
+        this.cachedRows = [];
+
+    },
+
     getStatuses(){
 
         const masterRows =
             window.MAP.DataStore.master || [];
 
-        const statuses =
-            [
-                ...new Set(
-
-                    masterRows
-                    .map(
-                        x =>
-                        String(
-                            x.erp_status || ""
-                        ).trim()
-                    )
-                    .filter(Boolean)
-
+        const statuses = [
+            ...new Set(
+                masterRows
+                .map(
+                    row =>
+                    String(
+                        row.erp_status || ""
+                    ).trim()
                 )
-            ];
+                .filter(Boolean)
+            )
+        ];
 
         statuses.sort();
 
@@ -29,95 +38,97 @@ window.MAP.PricingRepository = {
 
     },
 
-    getRows(
+    async generate(
 
         scenario = "BAU",
 
-        erpStatus = "All",
-
-        search = ""
+        progressCallback = null
 
     ){
+
+        this.generating = true;
+
+        this.cachedRows = [];
+
+        this.lastScenario =
+            scenario;
 
         const masterRows =
             window.MAP.DataStore.master || [];
 
-        const searchText =
-            String(
-                search || ""
-            )
-            .trim()
-            .toLowerCase();
+        const total =
+            masterRows.length;
 
-        return masterRows
+        const rows = [];
 
-            .filter(row => {
+        for(
 
-                if(
-                    erpStatus !== "All" &&
-                    String(
-                        row.erp_status || ""
-                    ).trim() !== erpStatus
-                ){
-                    return false;
-                }
+            let i = 0;
 
-                if(
-                    !searchText
-                ){
-                    return true;
-                }
+            i < total;
 
-                const searchBlob = [
+            i++
 
-                    row.style_id,
-                    row.erpsku,
-                    row.sellersku,
-                    row.catalog_id,
-                    row.product_id
+        ){
 
-                ]
-                .join(" ")
-                .toLowerCase();
+            const row =
+                masterRows[i];
 
-                return searchBlob.includes(
-                    searchText
+            const pricing =
+
+                window.MAP
+                .PricingEngine
+                .calculatePrice(
+
+                    Number(
+                        row.tp || 0
+                    ),
+
+                    Number(
+                        row.shipping || 0
+                    ),
+
+                    row.erp_status || "",
+
+                    scenario
+
                 );
 
-            })
-
-            .map(row => {
-
-                const pricing =
-
-                    window.MAP
-                    .PricingEngine
-                    .calculatePrice(
-
-                        Number(
-                            row.tp || 0
-                        ),
-
-                        Number(
-                            row.shipping || 0
-                        ),
-
-                        row.erp_status || "",
-
-                        scenario
-
-                    );
-
-                if(
-                    !pricing
-                ){
-                    return null;
-                }
+            if(pricing){
 
                 const r =
                     pricing.result;
 
-                return {
+                const currentSP =
+                    Number(
+                        row.current_sp || 0
+                    );
+
+                const recommendedSP =
+                    Number(
+                        r.sp || 0
+                    );
+
+                const spDiff =
+                    recommendedSP -
+                    currentSP;
+
+                const spDiffPercent =
+
+                    currentSP > 0
+
+                    ?
+
+                    (
+                        spDiff /
+                        currentSP
+                    ) * 100
+
+                    :
+
+                    0;
+
+                rows.push({
 
                     erp_launch_date:
                         row.erp_launch_date || "",
@@ -146,11 +157,20 @@ window.MAP.PricingRepository = {
                     erp_status:
                         row.erp_status || "",
 
-                    csp:
-                        r.csp,
+                    current_sp:
+                        currentSP,
 
                     sp:
-                        r.sp,
+                        recommendedSP,
+
+                    sp_diff:
+                        spDiff,
+
+                    sp_diff_percent:
+                        spDiffPercent,
+
+                    csp:
+                        r.csp,
 
                     shipping:
                         Number(
@@ -184,9 +204,6 @@ window.MAP.PricingRepository = {
                     bank_settlement:
                         r.bankSettlement,
 
-                    calc_payout:
-                        r.targetPayout,
-
                     marketing:
                         r.marketing,
 
@@ -217,112 +234,246 @@ window.MAP.PricingRepository = {
                     tp_margin_percent:
                         r.tpMarginPercent * 100
 
-                };
+                });
 
-            })
+            }
 
-            .filter(Boolean);
+            if(
+
+                progressCallback &&
+
+                (
+                    i % 100 === 0 ||
+
+                    i === total - 1
+                )
+
+            ){
+
+                progressCallback({
+
+                    processed:
+                        i + 1,
+
+                    total,
+
+                    percent:
+
+                        Math.round(
+
+                            (
+                                (i + 1)
+
+                                /
+
+                                total
+
+                            ) * 100
+
+                        )
+
+                });
+
+                await new Promise(
+                    resolve =>
+                    setTimeout(
+                        resolve,
+                        0
+                    )
+                );
+
+            }
+
+        }
+
+        this.cachedRows =
+            rows;
+
+        this.generating =
+            false;
+
+        return rows;
+
+    },
+
+    getCachedRows(
+
+        erpStatus = "All",
+
+        search = ""
+
+    ){
+
+        let rows =
+            [...this.cachedRows];
+
+        if(
+
+            erpStatus !== "All"
+
+        ){
+
+            rows =
+
+                rows.filter(
+
+                    row =>
+
+                        row.erp_status ===
+                        erpStatus
+
+                );
+
+        }
+
+        const searchText =
+
+            String(
+                search || ""
+            )
+
+            .trim()
+
+            .toLowerCase();
+
+        if(searchText){
+
+            rows =
+
+                rows.filter(row => {
+
+                    const blob = [
+
+                        row.style_id,
+                        row.sellersku,
+                        row.erpsku,
+                        row.catalog_id,
+                        row.product_id
+
+                    ]
+                    .join(" ")
+                    .toLowerCase();
+
+                    return blob.includes(
+                        searchText
+                    );
+
+                });
+
+        }
+
+        return rows;
+
+    },
+
+    getTopRows(
+
+        rows,
+
+        limit = 100
+
+    ){
+
+        return rows.slice(
+            0,
+            limit
+        );
 
     },
 
     getKpis(rows){
 
-        const totalStyles =
+        const count =
             rows.length;
-
-        const avgTP =
-
-            totalStyles
-
-            ?
-
-            rows.reduce(
-
-                (sum,row)=>
-
-                    sum +
-
-                    Number(
-                        row.tp || 0
-                    ),
-
-                0
-
-            )
-
-            /
-
-            totalStyles
-
-            :
-
-            0;
-
-        const avgSP =
-
-            totalStyles
-
-            ?
-
-            rows.reduce(
-
-                (sum,row)=>
-
-                    sum +
-
-                    Number(
-                        row.sp || 0
-                    ),
-
-                0
-
-            )
-
-            /
-
-            totalStyles
-
-            :
-
-            0;
-
-        const avgMargin =
-
-            totalStyles
-
-            ?
-
-            rows.reduce(
-
-                (sum,row)=>
-
-                    sum +
-
-                    Number(
-                        row.tp_margin_percent || 0
-                    ),
-
-                0
-
-            )
-
-            /
-
-            totalStyles
-
-            :
-
-            0;
 
         return {
 
-            totalStyles,
+            totalStyles:
+                count,
 
-            avgTP,
+            avgTP:
 
-            avgSP,
+                count
 
-            avgMargin
+                ?
+
+                rows.reduce(
+
+                    (sum,row)=>
+
+                        sum +
+
+                        Number(
+                            row.tp || 0
+                        ),
+
+                    0
+
+                )
+
+                /
+
+                count
+
+                :
+
+                0,
+
+            avgSP:
+
+                count
+
+                ?
+
+                rows.reduce(
+
+                    (sum,row)=>
+
+                        sum +
+
+                        Number(
+                            row.sp || 0
+                        ),
+
+                    0
+
+                )
+
+                /
+
+                count
+
+                :
+
+                0,
+
+            avgMargin:
+
+                count
+
+                ?
+
+                rows.reduce(
+
+                    (sum,row)=>
+
+                        sum +
+
+                        Number(
+                            row.tp_margin_percent || 0
+                        ),
+
+                    0
+
+                )
+
+                /
+
+                count
+
+                :
+
+                0
 
         };
 
@@ -331,7 +482,6 @@ window.MAP.PricingRepository = {
     exportCSV(rows){
 
         if(
-            !rows ||
             !rows.length
         ){
             return;
@@ -348,19 +498,16 @@ window.MAP.PricingRepository = {
 
             ...rows.map(row =>
 
-                headers.map(key => {
+                headers.map(key =>
 
-                    const value =
-                        row[key];
-
-                    return `"${String(
-                        value ?? ""
+                    `"${String(
+                        row[key] ?? ""
                     ).replaceAll(
                         `"`,
                         `""`
-                    )}"`;
+                    )}"`
 
-                }).join(",")
+                ).join(",")
 
             )
 
@@ -383,24 +530,24 @@ window.MAP.PricingRepository = {
                 blob
             );
 
-        const link =
+        const a =
             document.createElement(
                 "a"
             );
 
-        link.href = url;
+        a.href = url;
 
-        link.download =
-            `pricing_export.csv`;
+        a.download =
+            "pricing_export.csv";
 
         document.body.appendChild(
-            link
+            a
         );
 
-        link.click();
+        a.click();
 
         document.body.removeChild(
-            link
+            a
         );
 
         URL.revokeObjectURL(
