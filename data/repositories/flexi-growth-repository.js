@@ -2,35 +2,47 @@ window.MAP = window.MAP || {};
 
 window.MAP.FlexiGrowthRepository = {
 
-    findStyle(styleId){
+    findStyle(searchValue){
 
         const masterRows =
             window.MAP.DataStore.master || [];
 
-        const searchValue =
-            String(styleId || "")
+        const search =
+            String(searchValue || "")
             .trim()
             .toLowerCase();
 
-        return masterRows.find(row =>
+        return masterRows.find(row => {
 
-            String(
-                row.style_id || ""
-            )
-            .trim()
-            .toLowerCase()
+            const styleId =
+                String(
+                    row.style_id || ""
+                )
+                .trim()
+                .toLowerCase();
 
-            ===
+            const productId =
+                String(
+                    row.product_id || ""
+                )
+                .trim()
+                .toLowerCase();
 
-            searchValue
+            return (
 
-        ) || null;
+                styleId === search ||
+
+                productId === search
+
+            );
+
+        }) || null;
 
     },
 
     evaluate(
 
-        styleId,
+        searchValue,
 
         currentSP
 
@@ -38,7 +50,7 @@ window.MAP.FlexiGrowthRepository = {
 
         const row =
             this.findStyle(
-                styleId
+                searchValue
             );
 
         if(!row){
