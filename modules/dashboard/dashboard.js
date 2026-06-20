@@ -196,6 +196,12 @@ window.MAP.ModuleManager.register({
 
                 </div>
 
+                ${window.MAP.DailySalesReport.render()}
+
+                ${window.MAP.MonthlyAdsReport.render()}
+
+                ${window.MAP.TopStatesReport.render()}
+
             </div>
 
         `;
