@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Meesho Analytics Platform</title>
+
+    <link rel="stylesheet" href="./assets/css/app.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="./config/version.js"></script>
+    <script src="./config/supabase-config.js"></script>
+
+</head>
+
+<body>
+
+    <div id="app"></div>
+
+    <div class="footer-version" id="versionInfo"></div>
+
+    <script>
+        document.getElementById("versionInfo").innerHTML =
+            `${window.APP_VERSION.name} | v${window.APP_VERSION.version}`;
+    </script>
+
+</body>
+
+</html>
