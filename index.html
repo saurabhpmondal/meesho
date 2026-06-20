@@ -27,6 +27,7 @@
 <script src="./core/auth-manager.js"></script>
 
 <script src="./core/module-manager.js"></script>
+<script src="./core/layout-manager.js"></script>
 
 <script src="./modules/dashboard/dashboard.js"></script>
 <script src="./modules/top-styles/top-styles.js"></script>
@@ -49,9 +50,7 @@
 
 document.getElementById(
     "versionInfo"
-).innerHTML =
-
-`
+).innerHTML = `
 ${window.MAP.version.name}
 v${window.MAP.version.version}
 Build ${window.MAP.version.build}
