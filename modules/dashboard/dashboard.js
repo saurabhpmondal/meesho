@@ -10,6 +10,10 @@ window.MAP.ModuleManager.register({
 
     permission: "dashboard_view",
 
+    showSearch: true,
+
+    showFilters: true,
+
     render(container){
 
         container.innerHTML = `
