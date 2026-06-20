@@ -176,17 +176,25 @@ window.MAP.GoogleSheetService = {
         data
     ){
 
-        localStorage.setItem(
-            cacheKey,
-            JSON.stringify({
+        try{
 
-                timestamp:
-                    Date.now(),
+    localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+            timestamp: Date.now(),
+            data
+        })
+    );
 
-                data
+}
+catch(error){
 
-            })
-        );
+    console.warn(
+        "Cache skipped",
+        cacheKey
+    );
+
+}
 
     },
 
