@@ -34,11 +34,11 @@ window.MAP.ModuleManager.register({
         const adSpend =
             adsRepo.getAdSpend();
 
+        const revenue =
+            adsRepo.getRevenue();
+
         const roi =
             adsRepo.getROI();
-
-        const adRow =
-            adsRepo.getCurrentMonthRow();
 
         const fromDate =
             window.MAP.FilterState
@@ -120,7 +120,7 @@ window.MAP.ModuleManager.register({
 
                         <div class="kpi-value">
                             ₹${Math.round(
-                                gmv
+                                gmv || 0
                             ).toLocaleString()}
                         </div>
 
@@ -133,7 +133,8 @@ window.MAP.ModuleManager.register({
                         </div>
 
                         <div class="kpi-value">
-                            ${units.toLocaleString()}
+                            ${(units || 0)
+                                .toLocaleString()}
                         </div>
 
                     </div>
@@ -146,7 +147,7 @@ window.MAP.ModuleManager.register({
 
                         <div class="kpi-value">
                             ₹${Math.round(
-                                asp
+                                asp || 0
                             ).toLocaleString()}
                         </div>
 
@@ -169,83 +170,29 @@ window.MAP.ModuleManager.register({
                     <div class="kpi-card">
 
                         <div class="kpi-label">
-                            ROI
+                            Revenue
                         </div>
 
                         <div class="kpi-value">
-                            ${(roi || 0).toFixed(2)}x
+                            ₹${Math.round(
+                                revenue || 0
+                            ).toLocaleString()}
                         </div>
 
                     </div>
 
-                </div>
+                    <div class="kpi-card">
 
-                <div
-                    style="
-                        margin-top:24px;
-                        padding:16px;
-                        background:#fff;
-                        border:1px solid #e5e7eb;
-                        border-radius:12px;
-                    "
-                >
+                        <div class="kpi-label">
+                            ROI
+                        </div>
 
-                    <h3>
-                        Summary
-                    </h3>
+                        <div class="kpi-value">
+                            ${(roi || 0)
+                                .toFixed(2)}x
+                        </div>
 
-                    <table
-                        class="report-table"
-                    >
-
-                        <tr>
-                            <td>
-                                Date Range
-                            </td>
-
-                            <td>
-                                ${fromDate}
-                                →
-                                ${toDate}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Records Considered
-                            </td>
-
-                            <td>
-                                ${salesRepo
-                                    .getRows()
-                                    .length
-                                    .toLocaleString()}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Selected Month Ad Records
-                            </td>
-
-                            <td>
-                                ${adRow ? 1 : 0}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Revenue
-                            </td>
-
-                            <td>
-                                ₹${Math.round(
-                                    adsRepo.getRevenue()
-                                ).toLocaleString()}
-                            </td>
-                        </tr>
-
-                    </table>
+                    </div>
 
                 </div>
 
