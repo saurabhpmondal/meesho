@@ -37,6 +37,18 @@ window.MAP.ModuleManager.register({
         const roi =
             adsRepo.getROI();
 
+        const fromDate =
+            window.MAP.FilterState
+            .getFromDate();
+
+        const toDate =
+            window.MAP.FilterState
+            .getToDate();
+
+        const search =
+            window.MAP.FilterState
+            .getSearch();
+
         const meta =
             window.MAP.DataStore
             .metadata;
@@ -47,28 +59,54 @@ window.MAP.ModuleManager.register({
 
                 <div class="dashboard-header">
 
-                    <h2>
-                        Dashboard
-                    </h2>
+                    <div>
+
+                        <h2>
+                            Dashboard
+                        </h2>
+
+                        <div class="dashboard-subtitle">
+
+                            ${fromDate}
+                            →
+
+                            ${toDate}
+
+                        </div>
+
+                    </div>
 
                     <div class="dashboard-meta">
 
-                        <span>
-                            Last Refresh :
-                            ${
+                        Last Refresh :
+                        ${
+                            meta.lastRefresh
+                            ?
+                            new Date(
                                 meta.lastRefresh
-                                ?
-                                new Date(
-                                    meta.lastRefresh
-                                ).toLocaleString()
-                                :
-                                "-"
-                            }
-                        </span>
+                            ).toLocaleString()
+                            :
+                            "-"
+                        }
 
                     </div>
 
                 </div>
+
+                ${
+                    search
+                    ?
+                    `
+                    <div
+                        class="dashboard-search-chip"
+                    >
+                        Search :
+                        ${search}
+                    </div>
+                    `
+                    :
+                    ""
+                }
 
                 <div class="kpi-grid">
 
@@ -79,7 +117,9 @@ window.MAP.ModuleManager.register({
                         </div>
 
                         <div class="kpi-value">
-                            ₹${Math.round(gmv).toLocaleString()}
+                            ₹${Math.round(
+                                gmv
+                            ).toLocaleString()}
                         </div>
 
                     </div>
@@ -103,7 +143,9 @@ window.MAP.ModuleManager.register({
                         </div>
 
                         <div class="kpi-value">
-                            ₹${Math.round(asp).toLocaleString()}
+                            ₹${Math.round(
+                                asp
+                            ).toLocaleString()}
                         </div>
 
                     </div>
@@ -115,7 +157,9 @@ window.MAP.ModuleManager.register({
                         </div>
 
                         <div class="kpi-value">
-                            ₹${Math.round(adSpend).toLocaleString()}
+                            ₹${Math.round(
+                                adSpend
+                            ).toLocaleString()}
                         </div>
 
                     </div>
@@ -134,32 +178,59 @@ window.MAP.ModuleManager.register({
 
                 </div>
 
-                <div class="dashboard-debug">
+                <div
+                    style="
+                        margin-top:24px;
+                        padding:16px;
+                        background:#fff;
+                        border:1px solid #e5e7eb;
+                        border-radius:12px;
+                    "
+                >
 
                     <h3>
-                        Data Status
+                        Summary
                     </h3>
 
-                    <table class="report-table">
+                    <table
+                        class="report-table"
+                    >
 
                         <tr>
-                            <td>Sales Rows</td>
-                            <td>${meta.salesRows}</td>
+                            <td>
+                                Date Range
+                            </td>
+
+                            <td>
+                                ${fromDate}
+                                →
+                                ${toDate}
+                            </td>
                         </tr>
 
                         <tr>
-                            <td>Ads Rows</td>
-                            <td>${meta.adsRows}</td>
+                            <td>
+                                Records Considered
+                            </td>
+
+                            <td>
+                                ${salesRepo
+                                    .getRows()
+                                    .length
+                                    .toLocaleString()}
+                            </td>
                         </tr>
 
                         <tr>
-                            <td>Master Rows</td>
-                            <td>${meta.masterRows}</td>
-                        </tr>
+                            <td>
+                                Selected Month Ad Records
+                            </td>
 
-                        <tr>
-                            <td>Status</td>
-                            <td>${meta.refreshStatus}</td>
+                            <td>
+                                ${adsRepo
+                                    .getRows()
+                                    .length}
+                            </td>
                         </tr>
 
                     </table>
