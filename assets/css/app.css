@@ -228,3 +228,21 @@ body{
     border:1px solid #ddd;
     padding:10px;
 }
+
+.dashboard-report-card{
+    margin-top:24px;
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:16px;
+}
+
+.positive-value{
+    color:#16a34a;
+    font-weight:600;
+}
+
+.negative-value{
+    color:#dc2626;
+    font-weight:600;
+}
