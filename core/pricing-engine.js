@@ -2,6 +2,64 @@ window.MAP = window.MAP || {};
 
 window.MAP.PricingEngine = {
 
+    getTargetMultiplier(
+        erpStatus,
+        scenario
+    ){
+
+        const status =
+            String(
+                erpStatus || ""
+            ).trim();
+
+        if(
+            status === "Continue"
+        ){
+
+            if(
+                scenario === "BAU"
+            ){
+                return 0.90;
+            }
+
+            if(
+                scenario === "Small Event"
+            ){
+                return 0.85;
+            }
+
+            if(
+                scenario === "Big Event"
+            ){
+                return 0.83;
+            }
+
+            return 0.90;
+
+        }
+
+        if(
+            scenario === "BAU"
+        ){
+            return 0.80;
+        }
+
+        if(
+            scenario === "Small Event"
+        ){
+            return 0.60;
+        }
+
+        if(
+            scenario === "Big Event"
+        ){
+            return 0.60;
+        }
+
+        return 0.80;
+
+    },
+
     calculatePrice(
 
         tp,
@@ -10,56 +68,44 @@ window.MAP.PricingEngine = {
 
         erpStatus,
 
-        scenario,
+        scenario = "BAU",
 
         debug = false
 
     ){
 
-        const rows = [];
+        tp =
+            Number(tp || 0);
 
-        let targetMultiplier = 1;
+        shipping =
+            Number(shipping || 0);
 
-        if(
-            erpStatus === "Continue"
-        ){
+        const debugRows = [];
 
-            if(scenario === "BAU"){
-                targetMultiplier = 0.90;
-            }
-
-            if(scenario === "Small Event"){
-                targetMultiplier = 0.85;
-            }
-
-            if(scenario === "Big Event"){
-                targetMultiplier = 0.83;
-            }
-
-        }
-        else{
-
-            if(scenario === "BAU"){
-                targetMultiplier = 0.80;
-            }
-
-            if(
-                scenario === "Small Event"
-            ){
-                targetMultiplier = 0.60;
-            }
-
-            if(
-                scenario === "Big Event"
-            ){
-                targetMultiplier = 0.60;
-            }
-
-        }
+        const targetMultiplier =
+            this.getTargetMultiplier(
+                erpStatus,
+                scenario
+            );
 
         const targetPayout =
             tp *
             targetMultiplier;
+
+        /*
+            Reverse pricing
+
+            We know from your excel:
+
+            TP 279
+            Shipping 86
+
+            Expected SP ~369
+
+            So start near TP and
+            move upwards until
+            payout rule passes.
+        */
 
         for(
 
@@ -81,14 +127,14 @@ window.MAP.PricingEngine = {
             const baseShipping =
                 shipping / 1.05;
 
-            const shippingTax5 =
+            const taxOnShipping =
                 baseShipping *
                 0.05;
 
             const baseCSP =
                 csp / 1.05;
 
-            const cspTax5 =
+            const taxOnCSP =
                 baseCSP *
                 0.05;
 
@@ -100,9 +146,25 @@ window.MAP.PricingEngine = {
                 baseCSP *
                 0.001;
 
-            const shippingTax18 =
+            /*
+                FIXED
+
+                Excel:
+
+                81.90
+
+                ×
+
+                1.18
+
+                =
+
+                96.65
+            */
+
+            const shippingWithTax =
                 baseShipping *
-                0.18;
+                1.18;
 
             const bankSettlement =
 
@@ -110,7 +172,7 @@ window.MAP.PricingEngine = {
 
                 -
 
-                shippingTax18
+                shippingWithTax
 
                 -
 
@@ -184,7 +246,7 @@ window.MAP.PricingEngine = {
                 (
                     diff /
                     tp
-                ) * 100
+                )
 
                 :
 
@@ -198,7 +260,7 @@ window.MAP.PricingEngine = {
 
                 targetPayout;
 
-            const result = {
+            const row = {
 
                 erpStatus,
 
@@ -218,17 +280,17 @@ window.MAP.PricingEngine = {
 
                 baseShipping,
 
-                shippingTax5,
+                taxOnShipping,
 
                 baseCSP,
 
-                cspTax5,
+                taxOnCSP,
 
                 tcs,
 
                 tds,
 
-                shippingTax18,
+                shippingWithTax,
 
                 bankSettlement,
 
@@ -256,7 +318,9 @@ window.MAP.PricingEngine = {
 
             if(debug){
 
-                rows.push(result);
+                debugRows.push(
+                    row
+                );
 
             }
 
@@ -267,12 +331,10 @@ window.MAP.PricingEngine = {
                     recommendedSP:
                         sp,
 
-                    result,
+                    result:
+                        row,
 
-                    debugRows:
-                        debug
-                        ? rows
-                        : []
+                    debugRows
 
                 };
 
