@@ -48,12 +48,19 @@ window.MAP.Search = {
                             e.target.value.trim();
 
                         window.MAP.FilterState
-                            .setSearch(value);
+                            .setSearch(
+                                value
+                            );
 
                         console.log(
-                            "Global Search:",
+                            "Search Updated",
                             value
                         );
+
+                        window.MAP.Router
+                            .navigate(
+                                window.MAP.Router.current
+                            );
 
                     },300);
 
