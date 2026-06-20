@@ -151,63 +151,82 @@ window.MAP.App = {
 
     },
 
-    renderHome(){
+renderHome(){
 
-        const user =
-            window.MAP.state.user;
+    const user =
+        window.MAP.state.user;
 
-        const role =
-            window.MAP.state.role;
+    const role =
+        window.MAP.state.role;
 
-        document.getElementById("app").innerHTML = `
-            <div style="padding:40px;">
+    document.getElementById("app").innerHTML = `
 
-                <h1>
-                    Welcome
-                </h1>
+        <div class="app-shell">
 
-                <p>
+            <header class="app-header">
+
+                <div class="app-title">
+                    Meesho Analytics
+                </div>
+
+                <div class="user-area">
+
                     ${user.email}
-                </p>
 
-                <br>
+                    <button id="logoutBtn">
+                        Logout
+                    </button>
 
-                <p>
-                    Role:
-                    ${role.role_name}
-                </p>
+                </div>
 
-                <br>
+            </header>
 
-                <p>
-                    Permissions:
-                    ${window.MAP.state.permissions.length}
-                </p>
+            <nav class="app-nav">
 
-                <br>
+                ${window.MAP.Navigation.render()}
 
-                <p>
-                    Feature Flags:
-                    ${window.MAP.state.featureFlags.length}
-                </p>
+            </nav>
 
-                <br>
+            <main
+                id="mainContent"
+                class="app-content"
+            >
+            </main>
 
-                <button id="logoutBtn">
-                    Logout
-                </button>
+        </div>
 
-            </div>
-        `;
+    `;
 
-        document
+    document
         .getElementById("logoutBtn")
-        .addEventListener("click", () => {
+        .addEventListener("click",()=>{
 
             window.MAP.Auth.logout();
 
         });
 
-    }
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item=>{
 
-};
+            item.addEventListener(
+                "click",
+                ()=>{
+
+                    const route =
+                        item.dataset.route;
+
+                    window.MAP.Router.navigate(
+                        route
+                    );
+
+                }
+            );
+
+        });
+
+    window.MAP.Router.navigate(
+        "dashboard"
+    );
+
+}
