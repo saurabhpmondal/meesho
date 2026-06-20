@@ -4,9 +4,8 @@ window.MAP.SalesRepository = {
 
     getRows(){
 
-        let rows =
-            window.MAP.DataStore
-            .sales || [];
+        const rows =
+            window.MAP.DataStore.sales || [];
 
         const search =
             (
@@ -24,45 +23,48 @@ window.MAP.SalesRepository = {
             window.MAP.FilterState
             .getToDate();
 
-        rows =
+        const fromKey =
+            fromDate
+                ? Number(
+                    fromDate.replaceAll(
+                        "-",
+                        ""
+                    )
+                )
+                : 0;
+
+        const toKey =
+            toDate
+                ? Number(
+                    toDate.replaceAll(
+                        "-",
+                        ""
+                    )
+                )
+                : 99999999;
+
+        let filtered =
             rows.filter(row => {
 
-                const orderDate =
-                    this.parseDate(
+                const dateKey =
+                    this.getDateKey(
                         row.order_date
                     );
 
-                if(!orderDate){
-                    return false;
-                }
-
-                const from =
-                    new Date(fromDate);
-
-                const to =
-                    new Date(toDate);
-
-                to.setHours(
-                    23,
-                    59,
-                    59,
-                    999
-                );
-
                 return (
-                    orderDate >= from &&
-                    orderDate <= to
+                    dateKey >= fromKey &&
+                    dateKey <= toKey
                 );
 
             });
 
         if(!search){
 
-            return rows;
+            return filtered;
 
         }
 
-        return rows.filter(row => {
+        return filtered.filter(row => {
 
             return [
 
@@ -79,46 +81,42 @@ window.MAP.SalesRepository = {
 
     },
 
-    parseDate(value){
+    getDateKey(value){
 
         if(!value){
-            return null;
+            return 0;
         }
 
-        const str =
-            String(value);
-
         const match =
-            str.match(
+            String(value)
+            .match(
                 /Date\((\d+),(\d+),(\d+)\)/
             );
 
-        if(match){
-
-            return new Date(
-
-                Number(match[1]),
-
-                Number(match[2]),
-
-                Number(match[3])
-
-            );
-
+        if(!match){
+            return 0;
         }
 
-        const native =
-            new Date(str);
+        const year =
+            Number(match[1]);
 
-        if(
-            !isNaN(
-                native.getTime()
-            )
-        ){
-            return native;
-        }
+        const month =
+            Number(match[2]) + 1;
 
-        return null;
+        const day =
+            Number(match[3]);
+
+        return Number(
+
+            String(year) +
+
+            String(month)
+                .padStart(2,"0") +
+
+            String(day)
+                .padStart(2,"0")
+
+        );
 
     },
 
@@ -148,23 +146,17 @@ window.MAP.SalesRepository = {
             .getRows()
             .reduce(
 
-                (sum,row)=>{
+                (sum,row)=>
 
-                    return (
+                    sum +
 
-                        sum +
+                    Number(
 
-                        Number(
+                        row[
+                            "supplier_listed_price_(incl._gst_+_commission)"
+                        ] || 0
 
-                            row[
-                                "supplier_listed_price_(incl._gst_+_commission)"
-                            ] || 0
-
-                        )
-
-                    );
-
-                },
+                    ),
 
                 0
 
