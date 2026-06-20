@@ -6,7 +6,7 @@ window.MAP.ModuleManager.register({
 
     title: "Flexi Growth",
 
-    featureFlag: "pricing",
+    featureFlag: "flexi_growth",
 
     permission: "pricing_view",
 
@@ -18,114 +18,128 @@ window.MAP.ModuleManager.register({
 
         container.innerHTML = `
 
-        <div class="dashboard-page">
+        <div
+            style="
+                display:flex;
+                justify-content:center;
+                padding:30px;
+            "
+        >
 
-            <div class="dashboard-report-card">
-
-                <h2
-                    style="
-                        margin-bottom:20px;
-                    "
-                >
-                    Flexi Growth
-                </h2>
+            <div
+                style="
+                    width:100%;
+                    max-width:700px;
+                "
+            >
 
                 <div
+                    class="dashboard-report-card"
                     style="
-                        display:grid;
-                        grid-template-columns:
-                            repeat(
-                                auto-fit,
-                                minmax(
-                                    250px,
-                                    1fr
-                                )
-                            );
-                        gap:16px;
-                        margin-bottom:20px;
+                        padding:30px;
+                        border-radius:24px;
                     "
                 >
 
-                    <div>
+                    <div
+                        style="
+                            text-align:center;
+                            margin-bottom:30px;
+                        "
+                    >
 
-                        <label>
-                            Style ID / Product ID
-                        </label>
-
-                        <input
-                            id="flexiSearch"
-                            type="text"
-                            placeholder="Enter Style ID or Product ID"
+                        <h1
                             style="
-                                width:100%;
-                                margin-top:6px;
-                                padding:12px;
+                                margin:0;
+                                font-size:32px;
                             "
                         >
+                            Flexi Growth
+                        </h1>
+
+                        <div
+                            style="
+                                color:#666;
+                                margin-top:8px;
+                            "
+                        >
+                            Check Additional Discount Opportunity
+                        </div>
 
                     </div>
 
-                    <div>
+                    <div
+                        style="
+                            display:flex;
+                            flex-direction:column;
+                            gap:16px;
+                        "
+                    >
 
-                        <label>
-                            Current SP
-                        </label>
+                        <div>
 
-                        <input
-                            id="flexiCurrentSP"
-                            type="number"
-                            placeholder="Enter Current SP"
+                            <label>
+                                Style ID / Product ID
+                            </label>
+
+                            <input
+                                id="flexiSearch"
+                                type="text"
+                                placeholder="Enter Style ID or Product ID"
+                                style="
+                                    width:100%;
+                                    padding:14px;
+                                    margin-top:6px;
+                                    border-radius:12px;
+                                "
+                            >
+
+                        </div>
+
+                        <div>
+
+                            <label>
+                                Current Selling Price
+                            </label>
+
+                            <input
+                                id="flexiCurrentSP"
+                                type="number"
+                                placeholder="Enter Current SP"
+                                style="
+                                    width:100%;
+                                    padding:14px;
+                                    margin-top:6px;
+                                    border-radius:12px;
+                                "
+                            >
+
+                        </div>
+
+                        <button
+                            id="flexiCheckBtn"
                             style="
-                                width:100%;
-                                margin-top:6px;
-                                padding:12px;
+                                padding:16px;
+                                border:none;
+                                border-radius:12px;
+                                cursor:pointer;
+                                font-size:16px;
+                                font-weight:600;
                             "
                         >
+                            Check Eligibility
+                        </button>
 
                     </div>
 
-                </div>
-
-                <div
-                    style="
-                        display:flex;
-                        gap:10px;
-                        margin-bottom:20px;
-                    "
-                >
-
-                    <button
-                        id="flexiSearchBtn"
+                    <div
+                        id="flexiResult"
                         style="
-                            padding:12px 20px;
-                            cursor:pointer;
+                            margin-top:30px;
                         "
-                    >
-                        Search
-                    </button>
-
-                    <button
-                        id="flexiCheckBtn"
-                        style="
-                            padding:12px 20px;
-                            cursor:pointer;
-                        "
-                    >
-                        Check Eligibility
-                    </button>
+                    ></div>
 
                 </div>
-
-                <div
-                    id="flexiStyleInfo"
-                ></div>
-
-                <div
-                    id="flexiResult"
-                    style="
-                        margin-top:20px;
-                    "
-                ></div>
 
             </div>
 
@@ -133,203 +147,70 @@ window.MAP.ModuleManager.register({
 
         `;
 
-        let selectedStyle =
-            null;
-
         document
-            .getElementById(
-                "flexiSearchBtn"
-            )
-            .addEventListener(
+        .getElementById(
+            "flexiCheckBtn"
+        )
+        .addEventListener(
 
-                "click",
+            "click",
 
-                () => {
+            () => {
 
-                    const value =
-
-                        document
-                        .getElementById(
-                            "flexiSearch"
-                        )
-                        .value
-                        .trim();
-
-                    if(!value){
-
-                        alert(
-                            "Enter Style ID"
-                        );
-
-                        return;
-
-                    }
-
-                    const row =
-
-                        window.MAP
-                        .FlexiGrowthRepository
-                        .findStyle(
-                            value
-                        );
-
-                    selectedStyle =
-                        row;
-
-                    if(!row){
-
-                        document
-                        .getElementById(
-                            "flexiStyleInfo"
-                        )
-                        .innerHTML = `
-
-                            <div
-                                class="
-                                    negative-value
-                                "
-                            >
-                                Style Not Found
-                            </div>
-
-                        `;
-
-                        return;
-
-                    }
+                const searchValue =
 
                     document
                     .getElementById(
-                        "flexiStyleInfo"
+                        "flexiSearch"
                     )
-                    .innerHTML = `
+                    .value
+                    .trim();
 
-                        <table
-                            class="
-                                report-table
-                            "
-                        >
+                const currentSP =
 
-                            <tr>
+                    Number(
 
-                                <td>
-                                    Style ID
-                                </td>
+                        document
+                        .getElementById(
+                            "flexiCurrentSP"
+                        )
+                        .value
 
-                                <td>
-                                    ${row.style_id}
-                                </td>
+                    );
 
-                            </tr>
+                if(!searchValue){
 
-                            <tr>
+                    alert(
+                        "Enter Style ID or Product ID"
+                    );
 
-                                <td>
-                                    Product ID
-                                </td>
-
-                                <td>
-                                    ${row.product_id}
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>
-                                    ERP SKU
-                                </td>
-
-                                <td>
-                                    ${row.erpsku}
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>
-                                    ERP Status
-                                </td>
-
-                                <td>
-                                    ${row.erp_status}
-                                </td>
-
-                            </tr>
-
-                        </table>
-
-                    `;
+                    return;
 
                 }
 
-            );
+                if(!currentSP){
 
-        document
-            .getElementById(
-                "flexiCheckBtn"
-            )
-            .addEventListener(
+                    alert(
+                        "Enter Current SP"
+                    );
 
-                "click",
+                    return;
 
-                () => {
+                }
 
-                    if(
-                        !selectedStyle
-                    ){
+                const result =
 
-                        alert(
-                            "Search style first"
-                        );
+                    window.MAP
+                    .FlexiGrowthRepository
+                    .evaluate(
 
-                        return;
+                        searchValue,
 
-                    }
+                        currentSP
 
-                    const currentSP =
+                    );
 
-                        Number(
-
-                            document
-                            .getElementById(
-                                "flexiCurrentSP"
-                            )
-                            .value
-
-                        );
-
-                    if(
-                        !currentSP
-                    ){
-
-                        alert(
-                            "Enter Current SP"
-                        );
-
-                        return;
-
-                    }
-
-                    const result =
-
-                        window.MAP
-                        .FlexiGrowthRepository
-                        .evaluate(
-
-                            selectedStyle
-                            .style_id,
-
-                            currentSP
-
-                        );
-
-                    if(
-                        !result
-                    ){
-                        return;
-                    }
+                if(!result){
 
                     document
                     .getElementById(
@@ -337,147 +218,216 @@ window.MAP.ModuleManager.register({
                     )
                     .innerHTML = `
 
-                    <table
-                        class="
-                            report-table
-                        "
-                    >
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Style ID
-                                </th>
-
-                                <th>
-                                    Product ID
-                                </th>
-
-                                <th>
-                                    ERP SKU
-                                </th>
-
-                                <th>
-                                    ERP Status
-                                </th>
-
-                                <th>
-                                    Current SP
-                                </th>
-
-                                <th>
-                                    Min Addl Disc %
-                                </th>
-
-                                <th>
-                                    Max Addl Disc %
-                                </th>
-
-                                <th>
-                                    Eligibility
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-
-                                <td>
-                                    ${result.style_id}
-                                </td>
-
-                                <td>
-                                    ${result.product_id}
-                                </td>
-
-                                <td>
-                                    ${result.erpsku}
-                                </td>
-
-                                <td>
-                                    ${result.erp_status}
-                                </td>
-
-                                <td>
-                                    ₹${result.current_sp}
-                                </td>
-
-                                <td>
-
-                                    ${
-                                        result.min_discount === null
-
-                                        ?
-
-                                        "N/A"
-
-                                        :
-
-                                        result.min_discount + "%"
-                                    }
-
-                                </td>
-
-                                <td>
-
-                                    ${
-                                        result.max_discount
-                                    }%
-
-                                </td>
-
-                                <td>
-
-                                    <span
-
-                                        class="
-                                        ${
-                                            result.eligible
-
-                                            ?
-
-                                            "positive-value"
-
-                                            :
-
-                                            "negative-value"
-                                        }
-                                        "
-
-                                    >
-
-                                        ${
-                                            result.eligible
-
-                                            ?
-
-                                            "Eligible"
-
-                                            :
-
-                                            "Not Eligible"
-                                        }
-
-                                    </span>
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
+                        <div
+                            style="
+                                text-align:center;
+                                padding:30px;
+                                border-radius:20px;
+                                background:#fff3f3;
+                                color:#d32f2f;
+                                font-weight:700;
+                            "
+                        >
+                            Style Not Found
+                        </div>
 
                     `;
 
+                    return;
+
                 }
 
-            );
+                document
+                .getElementById(
+                    "flexiResult"
+                )
+                .innerHTML = `
+
+                <div
+                    style="
+                        border-radius:24px;
+                        padding:30px;
+                        box-shadow:
+                            0 10px 30px
+                            rgba(
+                                0,
+                                0,
+                                0,
+                                0.08
+                            );
+                        text-align:center;
+                    "
+                >
+
+                    <div
+                        style="
+                            font-size:18px;
+                            font-weight:700;
+                            margin-bottom:15px;
+                        "
+                    >
+
+                        ${
+                            result.eligible
+
+                            ?
+
+                            "🟢 ELIGIBLE"
+
+                            :
+
+                            "🔴 NOT ELIGIBLE"
+                        }
+
+                    </div>
+
+                    ${
+                        result.eligible
+
+                        ?
+
+                        `
+
+                        <div
+                            style="
+                                color:#666;
+                                margin-bottom:10px;
+                            "
+                        >
+                            Additional Discount Possible
+                        </div>
+
+                        <div
+                            style="
+                                font-size:14px;
+                                color:#888;
+                            "
+                        >
+                            UP TO
+                        </div>
+
+                        <div
+                            style="
+                                font-size:72px;
+                                font-weight:800;
+                                line-height:1;
+                                margin:10px 0 20px;
+                            "
+                        >
+                            ${result.max_discount}%
+                        </div>
+
+                        `
+
+                        :
+
+                        `
+
+                        <div
+                            style="
+                                font-size:18px;
+                                margin-top:15px;
+                            "
+                        >
+                            No Additional Discount Possible
+                        </div>
+
+                        `
+                    }
+
+                    <hr
+                        style="
+                            margin:25px 0;
+                        "
+                    >
+
+                    <div
+                        style="
+                            text-align:left;
+                            display:grid;
+                            grid-template-columns:
+                                1fr 1fr;
+                            gap:12px;
+                        "
+                    >
+
+                        <div>
+                            <b>Style ID</b>
+                        </div>
+
+                        <div>
+                            ${result.style_id}
+                        </div>
+
+                        <div>
+                            <b>Product ID</b>
+                        </div>
+
+                        <div>
+                            ${result.product_id}
+                        </div>
+
+                        <div>
+                            <b>ERP SKU</b>
+                        </div>
+
+                        <div>
+                            ${result.erpsku}
+                        </div>
+
+                        <div>
+                            <b>ERP Status</b>
+                        </div>
+
+                        <div>
+                            ${result.erp_status}
+                        </div>
+
+                        <div>
+                            <b>Current SP</b>
+                        </div>
+
+                        <div>
+                            ₹${result.current_sp}
+                        </div>
+
+                        <div>
+                            <b>Min Discount</b>
+                        </div>
+
+                        <div>
+
+                            ${
+                                result.min_discount === null
+
+                                ?
+
+                                "Not Possible"
+
+                                :
+
+                                result.min_discount + "%"
+                            }
+
+                        </div>
+
+                        <div>
+                            <b>Max Discount</b>
+                        </div>
+
+                        <div>
+                            ${result.max_discount}%
+                        </div>
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+
+        );
 
     }
 
