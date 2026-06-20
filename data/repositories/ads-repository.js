@@ -2,93 +2,128 @@ window.MAP = window.MAP || {};
 
 window.MAP.AdsRepository = {
 
-    getRows(){
-
-        const rows =
-            window.MAP.DataStore.ads || [];
+    getCurrentMonthRow(){
 
         const fromDate =
             window.MAP.FilterState
             .getFromDate();
 
         if(!fromDate){
-            return rows;
+            return null;
         }
 
-        const selected =
+        const selectedDate =
             new Date(fromDate);
 
         const month =
-            selected.getMonth() + 1;
+            selectedDate.getMonth() + 1;
 
         const year =
-            selected.getFullYear();
+            selectedDate.getFullYear();
 
-        return rows.filter(row => {
+        return (
+            window.MAP.DataStore.ads || []
+        ).find(row =>
 
-            return (
+            Number(row.month) === month &&
 
-                Number(row.month) === month &&
+            Number(row.year) === year
 
-                Number(row.year) === year
-
-            );
-
-        });
+        );
 
     },
 
     getAdSpend(){
 
-        return this
-            .getRows()
-            .reduce(
+        const row =
+            this.getCurrentMonthRow();
 
-                (sum,row)=>
+        if(!row){
+            return 0;
+        }
 
-                    sum +
-
-                    Number(
-                        row.ads_spend || 0
-                    ),
-
-                0
-
-            );
+        return Number(
+            String(row.ads_spend)
+                .replaceAll(",", "")
+        );
 
     },
 
     getRevenue(){
 
-        return this
-            .getRows()
-            .reduce(
+        const row =
+            this.getCurrentMonthRow();
 
-                (sum,row)=>
+        if(!row){
+            return 0;
+        }
 
-                    sum +
-
-                    Number(
-                        row.revenue || 0
-                    ),
-
-                0
-
-            );
+        return Number(
+            String(row.revenue)
+                .replaceAll(",", "")
+        );
 
     },
 
     getROI(){
 
-        const rows =
-            this.getRows();
+        const row =
+            this.getCurrentMonthRow();
 
-        if(!rows.length){
+        if(!row){
             return 0;
         }
 
         return Number(
-            rows[0].roi || 0
+            row.roi || 0
+        );
+
+    },
+
+    getViews(){
+
+        const row =
+            this.getCurrentMonthRow();
+
+        if(!row){
+            return 0;
+        }
+
+        return Number(
+            String(row.views)
+                .replaceAll(",", "")
+        );
+
+    },
+
+    getClicks(){
+
+        const row =
+            this.getCurrentMonthRow();
+
+        if(!row){
+            return 0;
+        }
+
+        return Number(
+            String(row.clicks)
+                .replaceAll(",", "")
+        );
+
+    },
+
+    getOrders(){
+
+        const row =
+            this.getCurrentMonthRow();
+
+        if(!row){
+            return 0;
+        }
+
+        return Number(
+            String(row.orders)
+                .replaceAll(",", "")
         );
 
     }
