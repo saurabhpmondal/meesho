@@ -1,0 +1,1 @@
+// permissions-config.js
