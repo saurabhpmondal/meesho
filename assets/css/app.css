@@ -155,3 +155,25 @@ body{
     display:flex;
     gap:20px;
 }
+
+.toolbar-wrapper{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    width:100%;
+}
+
+.search-container{
+    flex:1;
+}
+
+.global-search-input{
+    width:100%;
+    max-width:500px;
+    padding:10px 12px;
+}
+
+.filter-container{
+    display:flex;
+    gap:10px;
+}
