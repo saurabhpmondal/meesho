@@ -9,20 +9,38 @@ window.MAP.Router = {
         this.current = route;
 
         const content =
-            document.getElementById("mainContent");
+            document.getElementById(
+                "mainContent"
+            );
 
-        if(!content) return;
+        if(!content){
+            return;
+        }
 
-        content.innerHTML = `
-            <div style="padding:20px;">
-                <h2>${route}</h2>
-                <p>Module under development</p>
-            </div>
-        `;
+        const module =
+            window.MAP.ModuleManager
+            .get(route);
+
+        if(module){
+
+            module.render(content);
+
+        }
+        else{
+
+            content.innerHTML = `
+                <div style="padding:20px;">
+                    Module Not Found
+                </div>
+            `;
+
+        }
 
         document
             .querySelectorAll(".nav-item")
-            .forEach(x => x.classList.remove("active"));
+            .forEach(x =>
+                x.classList.remove("active")
+            );
 
         const active =
             document.querySelector(
@@ -30,7 +48,9 @@ window.MAP.Router = {
             );
 
         if(active){
+
             active.classList.add("active");
+
         }
 
     }
