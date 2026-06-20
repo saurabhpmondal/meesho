@@ -37,17 +37,16 @@ window.MAP.SalesRepository = {
                 }
 
                 const from =
-                    new Date(
-                        fromDate
-                    );
+                    new Date(fromDate);
 
                 const to =
-                    new Date(
-                        toDate
-                    );
+                    new Date(toDate);
 
                 to.setHours(
-                    23,59,59,999
+                    23,
+                    59,
+                    59,
+                    999
                 );
 
                 return (
@@ -68,7 +67,8 @@ window.MAP.SalesRepository = {
             return [
 
                 row.sku,
-                row.catalog_id
+                row.catalog_id,
+                row.product_name
 
             ]
             .join(" ")
@@ -85,28 +85,40 @@ window.MAP.SalesRepository = {
             return null;
         }
 
-        const parts =
-            String(value)
-            .split("/");
+        const str =
+            String(value);
 
-        if(parts.length !== 3){
-            return null;
+        const match =
+            str.match(
+                /Date\((\d+),(\d+),(\d+)\)/
+            );
+
+        if(match){
+
+            return new Date(
+
+                Number(match[1]),
+
+                Number(match[2]),
+
+                Number(match[3])
+
+            );
+
         }
 
-        const month =
-            Number(parts[0]) - 1;
+        const native =
+            new Date(str);
 
-        const day =
-            Number(parts[1]);
+        if(
+            !isNaN(
+                native.getTime()
+            )
+        ){
+            return native;
+        }
 
-        const year =
-            Number(parts[2]);
-
-        return new Date(
-            year,
-            month,
-            day
-        );
+        return null;
 
     },
 
@@ -138,15 +150,18 @@ window.MAP.SalesRepository = {
 
                 (sum,row)=>{
 
-                    const value =
+                    return (
+
+                        sum +
+
                         Number(
+
                             row[
                                 "supplier_listed_price_(incl._gst_+_commission)"
                             ] || 0
-                        );
 
-                    return (
-                        sum + value
+                        )
+
                     );
 
                 },
