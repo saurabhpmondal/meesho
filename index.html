@@ -2,30 +2,50 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Meesho Analytics Platform</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="./assets/css/app.css">
+<title>Meesho Analytics Platform</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="./assets/css/app.css">
 
-    <script src="./config/version.js"></script>
-    <script src="./config/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="./config/version.js"></script>
+<script src="./config/supabase-config.js"></script>
+
+<script src="./services/supabase-service.js"></script>
+
+<script src="./core/state-manager.js"></script>
+<script src="./core/loader-manager.js"></script>
 
 </head>
 
 <body>
 
-    <div id="app"></div>
+<div id="app"></div>
 
-    <div class="footer-version" id="versionInfo"></div>
+<div class="footer-version" id="versionInfo"></div>
 
-    <script>
-        document.getElementById("versionInfo").innerHTML =
-            `${window.APP_VERSION.name} | v${window.APP_VERSION.version}`;
-    </script>
+<script>
+
+document.getElementById("versionInfo").innerHTML =
+`
+${window.MAP.version.name}
+v${window.MAP.version.version}
+Build ${window.MAP.version.build}
+`;
+
+window.MAP.Loader.render();
+
+window.MAP.Loader.add("Supabase Initialized");
+
+window.MAP.Loader.add("State Manager Ready");
+
+window.MAP.Loader.add("Loader Ready");
+
+</script>
 
 </body>
 
