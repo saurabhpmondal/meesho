@@ -73,6 +73,22 @@ window.MAP.App = {
             );
 
             window.MAP.Loader.add(
+                "Loading Sales Data"
+            );
+
+            window.MAP.Loader.add(
+                "Loading Ads Data"
+            );
+
+            window.MAP.Loader.add(
+                "Loading Master Data"
+            );
+
+            await window.MAP
+                .DataBootstrapService
+                .load();
+
+            window.MAP.Loader.add(
                 "Platform Ready"
             );
 
@@ -116,7 +132,9 @@ window.MAP.App = {
                         placeholder="Password"
                     >
 
-                    <button id="loginBtn">
+                    <button
+                        id="loginBtn"
+                    >
                         Login
                     </button>
 
@@ -126,39 +144,57 @@ window.MAP.App = {
         `;
 
         document
-            .getElementById("loginBtn")
-            .addEventListener("click", async () => {
+            .getElementById(
+                "loginBtn"
+            )
+            .addEventListener(
+                "click",
+                async ()=>{
 
-                const email =
-                    document.getElementById("email")
-                    .value.trim();
+                    const email =
+                        document
+                        .getElementById(
+                            "email"
+                        )
+                        .value
+                        .trim();
 
-                const password =
-                    document.getElementById("password")
-                    .value;
+                    const password =
+                        document
+                        .getElementById(
+                            "password"
+                        )
+                        .value;
 
-                if(!email || !password){
+                    if(
+                        !email ||
+                        !password
+                    ){
 
-                    alert(
-                        "Email and Password required"
-                    );
+                        alert(
+                            "Email and Password required"
+                        );
 
-                    return;
+                        return;
+
+                    }
+
+                    const success =
+                        await window.MAP
+                        .Auth
+                        .login(
+                            email,
+                            password
+                        );
+
+                    if(success){
+
+                        location.reload();
+
+                    }
+
                 }
-
-                const success =
-                    await window.MAP.Auth.login(
-                        email,
-                        password
-                    );
-
-                if(success){
-
-                    location.reload();
-
-                }
-
-            });
+            );
 
     },
 
@@ -167,7 +203,9 @@ window.MAP.App = {
         const user =
             window.MAP.state.user;
 
-        document.getElementById("app").innerHTML = `
+        document.getElementById(
+            "app"
+        ).innerHTML = `
 
             <div class="app-shell">
 
@@ -183,7 +221,9 @@ window.MAP.App = {
                             ${user.email}
                         </span>
 
-                        <button id="logoutBtn">
+                        <button
+                            id="logoutBtn"
+                        >
                             Logout
                         </button>
 
@@ -214,27 +254,38 @@ window.MAP.App = {
         `;
 
         document
-            .getElementById("logoutBtn")
-            .addEventListener("click", () => {
+            .getElementById(
+                "logoutBtn"
+            )
+            .addEventListener(
+                "click",
+                ()=>{
 
-                window.MAP.Auth.logout();
+                    window.MAP
+                        .Auth
+                        .logout();
 
-            });
+                }
+            );
 
         document
-            .querySelectorAll(".nav-item")
+            .querySelectorAll(
+                ".nav-item"
+            )
             .forEach(item => {
 
                 item.addEventListener(
                     "click",
-                    () => {
+                    ()=>{
 
                         const route =
                             item.dataset.route;
 
-                        window.MAP.Router.navigate(
-                            route
-                        );
+                        window.MAP
+                            .Router
+                            .navigate(
+                                route
+                            );
 
                     }
                 );
