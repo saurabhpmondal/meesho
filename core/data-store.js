@@ -8,6 +8,16 @@ window.MAP.DataStore = {
 
     master: [],
 
+    loaded: {
+
+        sales: false,
+
+        ads: false,
+
+        master: false
+
+    },
+
     metadata: {
 
         salesRows: 0,
@@ -35,6 +45,40 @@ window.MAP.DataStore = {
 
         this.metadata.lastRefresh =
             new Date().toISOString();
+
+    },
+
+    reset(){
+
+        this.sales = [];
+
+        this.ads = [];
+
+        this.master = [];
+
+        this.loaded = {
+
+            sales: false,
+
+            ads: false,
+
+            master: false
+
+        };
+
+        this.metadata = {
+
+            salesRows: 0,
+
+            adsRows: 0,
+
+            masterRows: 0,
+
+            lastRefresh: null,
+
+            refreshStatus: "Not Loaded"
+
+        };
 
     }
 
