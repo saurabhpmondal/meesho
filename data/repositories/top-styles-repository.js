@@ -22,7 +22,7 @@ window.MAP.TopStylesRepository = {
             const master =
                 window.MAP
                 .MasterRepository
-                .findBySellerSku(
+                .getBySku(
                     row.sku
                 );
 
@@ -31,8 +31,13 @@ window.MAP.TopStylesRepository = {
             }
 
             const erpSku =
-                master.erpsku ||
-                "Unknown";
+                String(
+                    master.erpsku || ""
+                ).trim();
+
+            if(!erpSku){
+                return;
+            }
 
             if(!map[erpSku]){
 
@@ -78,7 +83,7 @@ window.MAP.TopStylesRepository = {
                 ...item,
 
                 asp:
-                    item.units
+                    item.units > 0
                     ?
                     item.gmv /
                     item.units
@@ -86,7 +91,7 @@ window.MAP.TopStylesRepository = {
                     0,
 
                 drr:
-                    days
+                    days > 0
                     ?
                     item.units /
                     days
