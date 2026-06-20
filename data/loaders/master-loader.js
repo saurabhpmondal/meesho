@@ -16,9 +16,9 @@ window.MAP.MasterLoader = {
             const data =
                 await window.MAP
                 .GoogleSheetService
-                .fetchSheet(
+                .fetchFresh(
                     this.GID,
-                    "master_cache"
+                    null
                 );
 
             window.MAP.DataStore.master =
