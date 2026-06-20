@@ -78,7 +78,9 @@ window.MAP.PricingEngine = {
             Number(tp || 0);
 
         shipping =
-            Number(shipping || 0);
+            Number(
+                shipping || 0
+            );
 
         const debugRows = [];
 
@@ -92,26 +94,14 @@ window.MAP.PricingEngine = {
             tp *
             targetMultiplier;
 
-        /*
-            Reverse pricing
-
-            We know from your excel:
-
-            TP 279
-            Shipping 86
-
-            Expected SP ~369
-
-            So start near TP and
-            move upwards until
-            payout rule passes.
-        */
+        let bestResult = null;
+        let bestGap = Infinity;
 
         for(
 
-            let sp = Math.ceil(tp);
+            let sp = 1;
 
-            sp <= 2000;
+            sp <= 3000;
 
             sp++
 
@@ -145,22 +135,6 @@ window.MAP.PricingEngine = {
             const tds =
                 baseCSP *
                 0.001;
-
-            /*
-                FIXED
-
-                Excel:
-
-                81.90
-
-                ×
-
-                1.18
-
-                =
-
-                96.65
-            */
 
             const shippingWithTax =
                 baseShipping *
@@ -252,6 +226,14 @@ window.MAP.PricingEngine = {
 
                 0;
 
+            const gap =
+
+                payoutAfterCODB
+
+                -
+
+                targetPayout;
+
             const pass =
 
                 payoutAfterCODB
@@ -316,29 +298,56 @@ window.MAP.PricingEngine = {
 
             };
 
-            if(debug){
-
+            if(
+                debug
+            ){
                 debugRows.push(
                     row
                 );
-
             }
 
-            if(pass){
+            if(
 
-                return {
+                pass &&
+
+                gap < bestGap
+
+            ){
+
+                bestGap =
+                    gap;
+
+                bestResult = {
 
                     recommendedSP:
                         sp,
 
                     result:
-                        row,
-
-                    debugRows
+                        row
 
                 };
 
             }
+
+        }
+
+        if(
+            bestResult
+        ){
+
+            return {
+
+                recommendedSP:
+                    bestResult
+                    .recommendedSP,
+
+                result:
+                    bestResult
+                    .result,
+
+                debugRows
+
+            };
 
         }
 
