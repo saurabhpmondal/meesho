@@ -23,6 +23,9 @@ window.MAP.Router = {
 
         if(module){
 
+            window.MAP.Layout
+                .renderToolbar(module);
+
             module.render(content);
 
         }
