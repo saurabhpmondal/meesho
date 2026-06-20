@@ -6,7 +6,7 @@ window.MAP.ModuleManager.register({
 
     title: "Payment Reconciliation",
 
-    featureFlag: "payment_reconciliation",
+    featureFlag: "pricing",
 
     permission: "pricing_view",
 
