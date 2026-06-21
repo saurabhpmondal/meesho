@@ -10,14 +10,156 @@ window.MAP.TopStylesRepository = {
 
     ){
 
-        const salesRows =
+        const currentRows =
             window.MAP
             .SalesRepository
             .getRows();
 
+        const previousRows =
+            this.getPreviousMonthRows();
+
+        const currentMap =
+            this.buildStyleMap(
+                currentRows
+            );
+
+        const previousMap =
+            this.buildStyleMap(
+                previousRows
+            );
+
+        const currentRankMap =
+            this.buildRankMap(
+                currentMap,
+                rankBy
+            );
+
+        const previousRankMap =
+            this.buildRankMap(
+                previousMap,
+                rankBy
+            );
+
+        const days =
+            this.getSelectedDays();
+
+        let result =
+            Object.values(
+                currentMap
+            )
+            .map(item => {
+
+                const rank =
+                    currentRankMap[
+                        item.erpSku
+                    ];
+
+                const lastMonthRank =
+                    previousRankMap[
+                        item.erpSku
+                    ] || null;
+
+                return {
+
+                    rank,
+
+                    lastMonthRank,
+
+                    rankChange:
+
+                        lastMonthRank
+
+                        ?
+
+                        (
+                            lastMonthRank -
+                            rank
+                        )
+
+                        :
+
+                        null,
+
+                    isNewEntry:
+                        !lastMonthRank,
+
+                    ...item,
+
+                    asp:
+
+                        item.units > 0
+
+                        ?
+
+                        (
+                            item.gmv /
+                            item.units
+                        )
+
+                        :
+
+                        0,
+
+                    drr:
+
+                        days > 0
+
+                        ?
+
+                        (
+                            item.units /
+                            days
+                        )
+
+                        :
+
+                        0
+
+                };
+
+            });
+
+        result.sort((a,b)=>{
+
+            if(
+                rankBy === "gmv"
+            ){
+
+                return (
+                    b.gmv -
+                    a.gmv
+                );
+
+            }
+
+            return (
+                b.units -
+                a.units
+            );
+
+        });
+
+        if(
+            limit !== "all"
+        ){
+
+            result =
+                result.slice(
+                    0,
+                    Number(limit)
+                );
+
+        }
+
+        return result;
+
+    },
+
+    buildStyleMap(rows){
+
         const map = {};
 
-        salesRows.forEach(row => {
+        rows.forEach(row => {
 
             const master =
                 window.MAP
@@ -73,36 +215,26 @@ window.MAP.TopStylesRepository = {
 
         });
 
-        const days =
-            this.getSelectedDays();
+        return map;
 
-        let result =
-            Object.values(map)
-            .map(item => ({
+    },
 
-                ...item,
+    buildRankMap(
 
-                asp:
-                    item.units > 0
-                    ?
-                    item.gmv /
-                    item.units
-                    :
-                    0,
+        map,
 
-                drr:
-                    days > 0
-                    ?
-                    item.units /
-                    days
-                    :
-                    0
+        rankBy
 
-            }));
+    ){
 
-        result.sort((a,b)=>{
+        const rows =
+            Object.values(map);
 
-            if(rankBy === "gmv"){
+        rows.sort((a,b)=>{
+
+            if(
+                rankBy === "gmv"
+            ){
 
                 return (
                     b.gmv -
@@ -118,31 +250,98 @@ window.MAP.TopStylesRepository = {
 
         });
 
-        result =
-            result.map(
-                (row,index)=>({
+        const rankMap = {};
 
-                    rank:
-                        index + 1,
+        rows.forEach(
 
-                    ...row
+            (row,index)=>{
 
-                })
-            );
+                rankMap[
+                    row.erpSku
+                ] =
+                    index + 1;
 
-        if(
-            limit !== "all"
-        ){
+            }
 
-            result =
-                result.slice(
-                    0,
-                    Number(limit)
-                );
+        );
 
+        return rankMap;
+
+    },
+
+    getPreviousMonthRows(){
+
+        const fromDate =
+            window.MAP
+            .FilterState
+            .getFromDate();
+
+        if(!fromDate){
+            return [];
         }
 
-        return result;
+        const date =
+            new Date(
+                fromDate
+            );
+
+        const previousMonthStart =
+            new Date(
+                date.getFullYear(),
+                date.getMonth() - 1,
+                1
+            );
+
+        const previousMonthEnd =
+            new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                0
+            );
+
+        const startKey =
+            Number(
+
+                previousMonthStart
+                .toISOString()
+                .slice(0,10)
+                .replaceAll("-","")
+
+            );
+
+        const endKey =
+            Number(
+
+                previousMonthEnd
+                .toISOString()
+                .slice(0,10)
+                .replaceAll("-","")
+
+            );
+
+        const rows =
+            window.MAP
+            .DataStore
+            .sales || [];
+
+        return rows.filter(row => {
+
+            const dateKey =
+                window.MAP
+                .SalesRepository
+                .getDateKey(
+                    row.order_date
+                );
+
+            return (
+
+                dateKey >= startKey &&
+
+                dateKey <= endKey
+
+            );
+
+        });
 
     },
 
@@ -177,7 +376,9 @@ window.MAP.TopStylesRepository = {
                 (
                     end -
                     start
-                ) /
+                )
+
+                /
 
                 (
                     1000 *
