@@ -98,9 +98,7 @@ window.MAP.ModuleManager.register({
                         <div>
 
                             <label>
-
                                 Rank By
-
                             </label>
 
                             <br>
@@ -116,8 +114,7 @@ window.MAP.ModuleManager.register({
                                 <option
                                     value="units"
                                     ${
-                                        state
-                                        .topStylesRankBy ===
+                                        state.topStylesRankBy ===
                                         "units"
                                         ?
                                         "selected"
@@ -131,8 +128,7 @@ window.MAP.ModuleManager.register({
                                 <option
                                     value="gmv"
                                     ${
-                                        state
-                                        .topStylesRankBy ===
+                                        state.topStylesRankBy ===
                                         "gmv"
                                         ?
                                         "selected"
@@ -150,9 +146,7 @@ window.MAP.ModuleManager.register({
                         <div>
 
                             <label>
-
                                 Show
-
                             </label>
 
                             <br>
@@ -200,7 +194,11 @@ window.MAP.ModuleManager.register({
                             <tr>
 
                                 <th>
-                                    Rank
+                                    Last Month Rank
+                                </th>
+
+                                <th>
+                                    Current Rank
                                 </th>
 
                                 <th>
@@ -242,7 +240,21 @@ window.MAP.ModuleManager.register({
                                 <tr>
 
                                     <td>
-                                        ${row.rank}
+
+                                        ${
+                                            row.lastMonthRank
+                                            ||
+                                            "-"
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        ${renderRankTrend(
+                                            row
+                                        )}
+
                                     </td>
 
                                     <td>
@@ -251,15 +263,13 @@ window.MAP.ModuleManager.register({
 
                                     <td>
                                         ${
-                                            row
-                                            .erpLaunchDate || "-"
+                                            row.erpLaunchDate || "-"
                                         }
                                     </td>
 
                                     <td>
                                         ${
-                                            row
-                                            .erpStatus || "-"
+                                            row.erpStatus || "-"
                                         }
                                     </td>
 
@@ -298,6 +308,83 @@ window.MAP.ModuleManager.register({
             </div>
 
         `;
+
+        function renderRankTrend(
+            row
+        ){
+
+            if(
+                row.isNewEntry
+            ){
+
+                return `
+
+                <span
+                    style="
+                        color:#7c3aed;
+                        font-weight:600;
+                    "
+                >
+
+                    New #${row.rank}
+
+                </span>
+
+                `;
+
+            }
+
+            if(
+                row.rankChange > 0
+            ){
+
+                return `
+
+                <span
+                    class="
+                        positive-value
+                    "
+                >
+
+                    #${row.rank}
+                    ↑${row.rankChange}
+
+                </span>
+
+                `;
+
+            }
+
+            if(
+                row.rankChange < 0
+            ){
+
+                return `
+
+                <span
+                    class="
+                        negative-value
+                    "
+                >
+
+                    #${row.rank}
+                    ↓${Math.abs(
+                        row.rankChange
+                    )}
+
+                </span>
+
+                `;
+
+            }
+
+            return `
+
+            #${row.rank}
+
+            `;
+
+        }
 
         const rankBySelect =
             document.getElementById(
