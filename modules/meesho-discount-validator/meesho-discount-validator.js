@@ -460,3 +460,79 @@ window.MAP.ModuleManager.register({
             }
 
         );
+
+
+        downloadBtn.addEventListener(
+
+            "click",
+
+            () => {
+
+                try{
+
+                    if(
+                        !processedResult
+                    ){
+
+                        alert(
+                            "Generate result first."
+                        );
+
+                        return;
+
+                    }
+
+                    const ws =
+
+                        XLSX.utils
+                        .json_to_sheet(
+
+                            processedResult
+
+                        );
+
+                    const wb =
+
+                        XLSX.utils
+                        .book_new();
+
+                    XLSX.utils
+                    .book_append_sheet(
+
+                        wb,
+
+                        ws,
+
+                        "Discount Validation"
+
+                    );
+
+                    XLSX.writeFile(
+
+                        wb,
+
+                        "Meesho_Discount_Validation_Result.xlsx"
+
+                    );
+
+                }
+
+                catch(error){
+
+                    console.error(
+                        error
+                    );
+
+                    alert(
+                        error.message
+                    );
+
+                }
+
+            }
+
+        );
+
+    }
+
+});
