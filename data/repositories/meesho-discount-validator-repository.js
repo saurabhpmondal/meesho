@@ -15,11 +15,8 @@ window.MAP.MeeshoDiscountValidatorRepository = {
     validateFile(rows){
 
         if(
-
             !rows ||
-
             rows.length === 0
-
         ){
 
             return{
@@ -27,7 +24,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                 success:false,
 
                 message:
-                    "File is empty."
+                    "Uploaded file is empty."
 
             };
 
@@ -89,20 +86,17 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
                 ).trim();
 
-            const master =
+            const product =
 
                 this.findProduct(
-
                     productId
-
                 );
 
-            if(master){
+            if(product){
 
                 found++;
 
             }
-
             else{
 
                 notFound++;
@@ -123,23 +117,75 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
     },
 
+    findProduct(productId){
+
+        const masterRows =
+
+            window.MAP
+            .DataStore
+            .master || [];
+
+        const search =
+
+            String(
+                productId
+            )
+            .trim()
+            .toLowerCase();
+
+        for(
+
+            const row
+
+            of
+
+            masterRows
+
+        ){
+
+            const value =
+
+                String(
+
+                    row.product_id ||
+
+                    row.productid ||
+
+                    row["Product ID"] ||
+
+                    ""
+
+                )
+                .trim()
+                .toLowerCase();
+
+            if(
+
+                value === search
+
+            ){
+
+                return row;
+
+            }
+
+        }
+
+        return null;
+
+    },
+
     generate(rows){
 
         const output = [];
 
         rows.forEach(row=>{
 
-            const result =
-
-                this.processRow(
-
-                    row
-
-                );
-
             output.push(
 
-                result
+                this.processRow(
+                    row
+                )
 
             );
 
@@ -149,31 +195,6 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
     },
 
-    findProduct(productId){
-
-        const rows =
-            window.MAP.DataStore.master || [];
-
-        const searchValue =
-            String(productId || "")
-            .trim()
-            .toLowerCase();
-
-        return rows.find(row =>
-
-            String(
-                row.product_id || ""
-            )
-            .trim()
-            .toLowerCase()
-
-            ===
-
-            searchValue
-
-        ) || null;
-
-    },
 
     processRow(row){
 
@@ -187,7 +208,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
             ).trim();
 
-        const currentSP =
+        const currentPrice =
 
             Number(
 
@@ -207,13 +228,13 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
             );
 
-        const master =
+        const product =
 
             this.findProduct(
                 productId
             );
 
-        if(!master){
+        if(!product){
 
             return{
 
@@ -221,7 +242,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                     productId,
 
                 "Meesho Price Before Discount":
-                    currentSP,
+                    currentPrice,
 
                 "Min Discount":
                     requestedDiscount,
@@ -236,17 +257,29 @@ window.MAP.MeeshoDiscountValidatorRepository = {
 
         }
 
-        const result =
+        let result = null;
 
-            window.MAP
-            .FlexiGrowthRepository
-            .evaluate(
+        try{
 
-                master.style_id,
+            result =
 
-                currentSP
+                window.MAP
+                .FlexiGrowthRepository
+                .evaluate(
 
-            );
+                    product.style_id,
+
+                    currentPrice
+
+                );
+
+        }
+
+        catch(error){
+
+            console.error(error);
+
+        }
 
         if(
 
@@ -260,7 +293,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                     productId,
 
                 "Meesho Price Before Discount":
-                    currentSP,
+                    currentPrice,
 
                 "Min Discount":
                     requestedDiscount,
@@ -278,7 +311,9 @@ window.MAP.MeeshoDiscountValidatorRepository = {
         const maxDiscount =
 
             Number(
+
                 result.max_discount || 0
+
             );
 
         if(
@@ -295,7 +330,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                     productId,
 
                 "Meesho Price Before Discount":
-                    currentSP,
+                    currentPrice,
 
                 "Min Discount":
                     requestedDiscount,
@@ -316,7 +351,7 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                 productId,
 
             "Meesho Price Before Discount":
-                currentSP,
+                currentPrice,
 
             "Min Discount":
                 requestedDiscount,
@@ -328,32 +363,6 @@ window.MAP.MeeshoDiscountValidatorRepository = {
                 "Not Eligible"
 
         };
-
-    }
-
-    getFoundCount(rows){
-
-        return rows.filter(row =>
-
-            this.findProduct(
-
-                row[
-                    "Product ID"
-                ]
-
-            )
-
-        ).length;
-
-    },
-
-    getNotFoundCount(rows){
-
-        return rows.length -
-
-            this.getFoundCount(
-                rows
-            );
 
     }
 
