@@ -235,3 +235,228 @@ window.MAP.ModuleManager.register({
             document.getElementById(
                 "downloadResultBtn"
             );
+
+        sampleBtn.addEventListener(
+
+            "click",
+
+            () => {
+
+                const sample = [
+
+                    {
+
+                        "Product ID":"123456789",
+
+                        "Meesho Price Before Discount":"999",
+
+                        "Min Discount":"8"
+
+                    }
+
+                ];
+
+                const ws =
+
+                    XLSX.utils
+                    .json_to_sheet(
+                        sample
+                    );
+
+                const wb =
+
+                    XLSX.utils
+                    .book_new();
+
+                XLSX.utils
+                .book_append_sheet(
+
+                    wb,
+
+                    ws,
+
+                    "Sample"
+
+                );
+
+                XLSX.writeFile(
+
+                    wb,
+
+                    "Meesho_Discount_Validator_Sample.xlsx"
+
+                );
+
+            }
+
+        );
+
+        uploadInput.addEventListener(
+
+            "change",
+
+            async () => {
+
+                try{
+
+                    const file =
+
+                        uploadInput
+                        .files[0];
+
+                    if(
+                        !file
+                    ){
+                        return;
+                    }
+
+                    const buffer =
+
+                        await file
+                        .arrayBuffer();
+
+                    const workbook =
+
+                        XLSX.read(
+
+                            buffer,
+
+                            {
+
+                                type:
+                                    "array"
+
+                            }
+
+                        );
+
+                    const sheetName =
+
+                        workbook
+                        .SheetNames[0];
+
+                    const worksheet =
+
+                        workbook
+                        .Sheets[
+                            sheetName
+                        ];
+
+                    uploadedRows =
+
+                        XLSX.utils
+                        .sheet_to_json(
+
+                            worksheet
+
+                        );
+
+                    const validation =
+
+                        window.MAP
+                        .MeeshoDiscountValidatorRepository
+                        .validateFile(
+
+                            uploadedRows
+
+                        );
+
+                    if(
+                        !validation.success
+                    ){
+
+                        alert(
+                            validation.message
+                        );
+
+                        uploadedRows = [];
+
+                        return;
+
+                    }
+
+                    document
+                    .getElementById(
+                        "foundCount"
+                    )
+                    .innerHTML =
+                        validation
+                        .found;
+
+                    document
+                    .getElementById(
+                        "notFoundCount"
+                    )
+                    .innerHTML =
+                        validation
+                        .notFound;
+
+                    generateBtn
+                    .disabled =
+                        false;
+
+                }
+
+                catch(error){
+
+                    console
+                    .error(
+                        error
+                    );
+
+                    alert(
+                        error.message
+                    );
+
+                }
+
+            }
+
+        );
+
+        generateBtn.addEventListener(
+
+            "click",
+
+            () => {
+
+                try{
+
+                    processedResult =
+
+                        window.MAP
+                        .MeeshoDiscountValidatorRepository
+                        .generate(
+
+                            uploadedRows
+
+                        );
+
+                    downloadBtn
+                    .disabled =
+                        false;
+
+                    alert(
+
+                        "Result generated successfully."
+
+                    );
+
+                }
+
+                catch(error){
+
+                    console
+                    .error(
+                        error
+                    );
+
+                    alert(
+                        error.message
+                    );
+
+                }
+
+            }
+
+        );
