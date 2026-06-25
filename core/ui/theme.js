@@ -1,42 +1,152 @@
+window.MAP = window.MAP || {};
+
 window.MAP.Theme = {
 
-    colors:{
+    version : "1.0.0",
 
-        primary:"#4f46e5",
+    mode : "light",
 
-        success:"#16a34a",
+    colors : {
 
-        danger:"#dc2626",
+        primary     : "#4f46e5",
+        secondary   : "#7c3aed",
 
-        warning:"#f59e0b",
+        success     : "#16a34a",
+        danger      : "#dc2626",
+        warning     : "#f59e0b",
+        info         : "#0ea5e9",
 
-        info:"#0ea5e9",
+        background  : "#f5f7fb",
+        surface     : "#ffffff",
 
-        background:"#f8fafc",
+        border      : "#e5e7eb",
 
-        surface:"#ffffff",
+        text        : "#111827",
+        muted       : "#64748b",
 
-        border:"#e5e7eb"
-
-    },
-
-    radius:{
-
-        sm:8,
-
-        md:14,
-
-        lg:20
+        shadow      : "rgba(15,23,42,.08)"
 
     },
 
-    shadow:{
+    radius : {
 
-        sm:"0 2px 8px rgba(0,0,0,.05)",
+        sm : "8px",
 
-        md:"0 8px 20px rgba(0,0,0,.08)",
+        md : "14px",
 
-        lg:"0 15px 40px rgba(0,0,0,.12)"
+        lg : "20px",
+
+        xl : "26px"
+
+    },
+
+    spacing : {
+
+        xs : "4px",
+
+        sm : "8px",
+
+        md : "16px",
+
+        lg : "24px",
+
+        xl : "32px",
+
+        xxl : "48px"
+
+    },
+
+    shadow : {
+
+        sm :
+
+            "0 2px 8px rgba(15,23,42,.05)",
+
+        md :
+
+            "0 8px 20px rgba(15,23,42,.08)",
+
+        lg :
+
+            "0 18px 45px rgba(15,23,42,.12)"
+
+    },
+
+    transition : {
+
+        fast :
+
+            "all .15s ease",
+
+        normal :
+
+            "all .25s ease",
+
+        slow :
+
+            "all .4s ease"
+
+    },
+
+    font : {
+
+        family :
+
+            "Inter, Arial, sans-serif",
+
+        title :
+
+            "700",
+
+        subtitle :
+
+            "500",
+
+        normal :
+
+            "400"
+
+    },
+
+    getColor(name){
+
+        return this.colors[name];
+
+    },
+
+    getRadius(name){
+
+        return this.radius[name];
+
+    },
+
+    getShadow(name){
+
+        return this.shadow[name];
+
+    },
+
+    getSpacing(name){
+
+        return this.spacing[name];
+
+    },
+
+    getTransition(name){
+
+        return this.transition[name];
+
+    },
+
+    isDark(){
+
+        return this.mode === "dark";
+
+    },
+
+    setMode(mode){
+
+        this.mode = mode;
 
     }
 
